@@ -52,6 +52,7 @@ details.more.card>summary{font-size:13px;text-transform:uppercase;letter-spacing
 .mxv .tx{flex:1 1 300px}.mxv .tx b.hd{display:block;font-size:20px;margin-bottom:4px}
 table.mx td.w{font-weight:800;color:var(--acc)}table.mx td,table.mx th{text-align:right}table.mx td:first-child,table.mx th:first-child,table.mx td.l,table.mx th.l{text-align:left}
 .card.fold>.cbody{overflow-x:auto;max-width:100%}.grid>.card{min-width:0}
+.mxplan h4{margin:0 0 4px;font-size:15px}.mxplan{gap:14px 28px}.mxplan ul.bl li{margin-bottom:10px}
 .morebtn{font:inherit;font-size:13.5px;font-weight:700;color:#44515d;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px;min-height:36px;margin-top:8px;cursor:pointer}
 @media(max-width:700px){nav button{font-size:14px;padding:11px 10px}}
 @media print{.grid:has(>.card.fold){align-items:stretch}}
@@ -1590,6 +1591,77 @@ function mxSide(title,hd,hitD,pitD,hitLink,pitLink,hitWho,pitWho){var th=mxThrow
   return '<div class="card"><h3>'+title+'</h3><div class="note">'+lead.join(". ")+'.</div>'
     +'<h4 style="margin:12px 0 6px">'+hitWho+' hitters</h4><div style="overflow:auto"><table class="mx"><tr><th>Hitter</th><th>B</th><th>PA</th><th>OPS</th><th>vs RHP</th><th>vs LHP</th><th>K%</th><th class="l"></th></tr>'+(hr||'<tr><td colspan="8" class="l">No hitter has 30 plate appearances.</td></tr>')+"</table></div>"
     +'<h4 style="margin:14px 0 6px">'+pitWho+' pitchers</h4><div style="overflow:auto"><table class="mx"><tr><th>Pitcher</th><th>T</th><th>GS / G</th><th>IP</th><th>OPS allowed</th><th>vs RHB</th><th>vs LHB</th><th>K%</th><th class="l"></th></tr>'+(pr||'<tr><td colspan="9" class="l">No pitcher has 8 innings.</td></tr>')+"</table></div></div>";}
+function mxReg(l,base,k){if(base==null)return l&&l.pa?opsOf(l):null;if(!l||!l.pa)return base;return (l.pa*opsOf(l)+k*base)/(l.pa+k);}
+function mxRegs(d){var a=[];d.players.forEach(function(p,i){if(p.s&&p.s[0][0]>=30)a.push({p:p,i:i,pa:p.s[0][0]});});a.sort(function(x,y){return y.pa-x.pa;});return a;}
+function mxMix(d){var a=mxRegs(d).slice(0,11),m={L:0,R:0,S:0},t=0;a.forEach(function(x){if(m[x.p.b]!=null){m[x.p.b]+=x.pa;t+=x.pa;}});if(!t)return{L:.35,R:.65,S:0};return{L:m.L/t,R:m.R/t,S:m.S/t};}
+function mxArms(U,d){var mix=mxMix(d),tb=d.sum.bat||[],tA=line(tb[0]),tAll=tA?opsOf(tA):null,out=[],lgL=line((LG().pit||[])[0]),lgO=lgL?opsOf(lgL):null;
+  U.players.forEach(function(p,i){var q=p.p;if(!q||!q.s||q.o<36||(p.t!=="L"&&p.t!=="R"))return;var A=line(q.s[0]);if(!A)return;var base=lgO?(A.pa*opsOf(A)+100*lgO)/(A.pa+100):opsOf(A),vL=mxReg(line(q.s[1]),base,40),vR=mxReg(line(q.s[2]),base,40);
+    var fL=mix.L+(p.t==="R"?mix.S:0),fR=mix.R+(p.t==="L"?mix.S:0),pr=fL*vL+fR*vR,th=line(tb[p.t==="L"?1:2]),fac=tAll?mxReg(th,tAll,150)/tAll:1;
+    out.push({p:p,i:i,q:q,A:A,base:base,vL:vL,vR:vR,proj:pr*fac,fac:fac,st:(q.gs||0)>=3});});
+  out.sort(function(x,y){return x.proj-y.proj;});return out;}
+function mxBats(U,hand){var k=hand==="L"?1:2;return mxRegs(U).map(function(x){var A=line(x.p.s[0]),sp=line(x.p.s[k]);return{p:x.p,i:x.i,pa:x.pa,all:opsOf(A),sp:sp,v:mxReg(sp,opsOf(A),40)};}).sort(function(a,b){return b.v-a.v;});}
+function mxLast(n){var w=String(n||"").trim().split(/\s+/);while(w.length>1&&/^(jr\.?|sr\.?|ii|iii|iv|v)$/i.test(w[w.length-1]))w.pop();return esc(w[w.length-1]||"");}
+function mxPlan(U,d){var a=U.sum,b=d.sum,L=LG(),G={mound:[],plate:[],bases:[],field:[]},arms=mxArms(U,d),mix=mxMix(d);
+  function add(k,call,why){G[k].push("<b>"+call+"</b> "+why);}
+  // on the mound
+  var sts=arms.filter(function(x){return x.st;}),rel=arms.filter(function(x){return !x.st;});
+  if(sts.length){var x=sts[0],y=sts[sts.length-1];add("mound","Start "+esc(x.p.n)+".","Best fit of our "+sts.length+" starters for this lineup ("+ipTxt(x.q.o)+" innings this season): about "+f3(x.proj)+" OPS against it"+(sts.length>1&&y.proj-x.proj>=.03?", against "+f3(y.proj)+" for "+mxLast(y.p.n):"")+". Their regulars are "+pc0(mix.R)+" right-handed"+(mix.L?", "+pc0(mix.L)+" left":"")+".");}
+  if(rel.length)add("mound","First arms out of the bullpen: "+rel.slice(0,2).map(function(x){return esc(x.p.n)+" ("+x.p.t+", "+f3(x.proj)+")";}).join(", ")+".","Lowest expected OPS against their lineup among our relievers.");
+  var tb=b.bat||[],tl=line(tb[1]),tr=line(tb[2]);
+  if(tl&&tr&&tl.pa>=120&&tr.pa>=120){var df=opsOf(tl)-opsOf(tr);if(Math.abs(df)>=.06)add("mound",(df<0?"Use left-handers when you can.":"Lean on right-handers."),"They hit "+f3(opsOf(tl))+" OPS against lefties and "+f3(opsOf(tr))+" against righties.");}
+  var hit=mxRegs(d).filter(function(x){return x.pa>=50;}).map(function(x){var A=line(x.p.s[0]);x.A=A;x.ops=mxReg(A,null,0);return x;});
+  var top=hit.slice().sort(function(x,y){return y.ops-x.ops;}).slice(0,3);
+  if(top.length)add("mound","Do not let "+top.map(function(x){return nm(x.p,x.i);}).join(", ")+" beat you.",top.map(function(x){var R=line(x.p.s[2]),Lh=line(x.p.s[1]);return mxLast(x.p.n)+" "+f3(x.ops)+" OPS"+(R&&Lh&&R.pa>=20&&Lh.pa>=20&&Math.abs(opsOf(R)-opsOf(Lh))>=.15?" (far better against "+(opsOf(R)>opsOf(Lh)?"righties":"lefties")+")":"");}).join("; ")+".");
+  var ks=hit.filter(function(x){return x.A.k>=.24&&top.indexOf(x)<0;}).sort(function(x,y){return y.A.k-x.A.k;}).slice(0,3);
+  if(ks.length)add("mound","Go after "+ks.map(function(x){return nm(x.p,x.i);}).join(", ")+" with two strikes.",ks.map(function(x){return mxLast(x.p.n)+" strikes out "+pc0(x.A.k);}).join("; ")+".");
+  var tt=(b.tto||[]).map(line);if(tt[0]&&tt[2]&&tt[0].pa>=80&&tt[2].pa>=80){var d3=opsOf(tt[2])-opsOf(tt[0]);
+    if(d3>=.08)add("mound","Have the bullpen ready the third time through.","They hit "+f3(opsOf(tt[0]))+" the first time they see a starter and "+f3(opsOf(tt[2]))+" the third.");
+    else if(d3<=-.08)add("mound","Let the starter go deep.","They fade against a starter: "+f3(opsOf(tt[0]))+" the first time through, "+f3(opsOf(tt[2]))+" the third.");}
+  // at the plate
+  var ps=starters(d).slice(0,3);
+  var byH=[["R","right"],["L","left"]].map(function(h){return{h:h[0],w:h[1],st:ps.filter(function(x){return (x.p.t==="L"?"L":"R")===h[0];})};}).filter(function(g){return g.st.length;});
+  byH.forEach(function(g){var bats=mxBats(U,g.h),reg9=mxRegs(U).slice(0,9).map(function(r){return r.i;}),best=bats.slice(0,9),ins=best.filter(function(h){return reg9.indexOf(h.i)<0&&h.sp&&h.sp.pa>=15;}),outs=bats.slice(9).filter(function(h){return reg9.indexOf(h.i)>=0;});
+    if(ins.length&&outs.length&&ins[0].v-outs[outs.length-1].v<.06)ins=[];
+    var why="Our best bats against "+g.w+"-handers: "+best.slice(0,4).map(function(h){return mxLast(h.p.n)+" "+f3(h.v);}).join(", ")+".";
+    if(ins.length&&outs.length)why+=" Consider "+ins.slice(0,2).map(function(h){return esc(h.p.n)+" ("+f3(opsOf(h.sp))+" in "+h.sp.pa+" PA)";}).join(" and ")+" over "+outs.slice(0,2).map(function(h){return mxLast(h.p.n)+(h.sp&&h.sp.pa>=15?" ("+f3(opsOf(h.sp))+")":"");}).join(" or ")+".";
+    add("plate","Against their "+g.w+"-handed starter"+(g.st.length>1?"s":"")+" ("+g.st.map(function(x){return nm(x.p,x.i)+", "+x.gs+" starts";}).join("; ")+"):",why);});
+  ps.forEach(function(x){var r=x.tt&&x.tt.length?ttRead(x.tt):"";if(r&&r!=="Holds his level")add("plate",nm(x.p,x.i)+":",r+". He averages "+ipTxt(Math.round(x.ip))+" innings a start.");});
+  var pt=(b.ptt||[]).map(line);if(pt[3]&&pt[0]){var sp=[0,0,0,0,0,0,0,0,0,0,0];for(var i=0;i<3;i++)for(var j=0;j<11;j++)sp[j]+=(b.ptt[i]||[])[j]||0;var sl=line(sp);
+    if(sl&&sl.pa>=150&&pt[3].pa>=150){var dp=opsOf(pt[3])-opsOf(sl);
+      if(dp>=.06)add("plate","Run up the pitch count and get to their bullpen.","Their relievers allow "+f3(opsOf(pt[3]))+" OPS; their starters "+f3(opsOf(sl))+".");
+      else if(dp<=-.06)add("plate","Score early.","Their bullpen ("+f3(opsOf(pt[3]))+" OPS allowed) is tougher than their starters ("+f3(opsOf(sl))+").");}}
+  var tp=line(b.pit&&b.pit[0]),lp=line(L.pit&&L.pit[0]);
+  if(tp&&lp){if(tp.bb-lp.bb>=.025)add("plate","Make them throw strikes.","Their pitchers walk "+pc0(tp.bb)+" of hitters; D3 is "+pc0(lp.bb)+".");
+    if(lp.k-tp.k>=.03)add("plate","Put the ball in play.","They strike out only "+pc0(tp.k)+" of hitters (D3 "+pc0(lp.k)+")"+(b.errn!=null&&L.errn&&b.errn/b.g>=1.2*L.errn/L.g?" and make "+(b.errn/b.g).toFixed(1)+" errors a game":"")+".");}
+  // on the bases
+  var dr=b.dr2||[0,0,0],lsafe=L.att?L.sb/L.att:null;
+  if(dr[1]>=12){var sf=dr[2]/dr[1],cs=[];d.players.forEach(function(p){if(p.c&&p.c[0]>=8)cs.push(mxLast(p.n)+" "+p.c[1]+" of "+p.c[0]);});
+    add("bases",sf>=.8?"Run on them.":sf<=.68?"Pick your spots on the bases.":"Run in the usual spots.","Runners are safe "+pc0(sf)+" of the time against them"+(lsafe!=null?" (D3 "+pc0(lsafe)+")":"")+(cs.length?". Safe by catcher: "+cs.join(", "):"")+".");}
+  var easy=[];d.players.forEach(function(p,i){if(p.p&&p.p.sb&&p.p.sb[0]>=5&&p.p.sb[1]/p.p.sb[0]>=.8)easy.push({p:p,i:i,a:p.p.sb[0],s:p.p.sb[1]});});easy.sort(function(x,y){return y.a-x.a;});
+  if(easy.length)add("bases","Go on "+easy.slice(0,3).map(function(x){return nm(x.p,x.i);}).join(", ")+".",easy.slice(0,3).map(function(x){return x.s+" of "+x.a+" safe against "+mxLast(x.p.n);}).join("; ")+".");
+  if(b.wpb!=null&&L.wpb&&L.g&&b.wpb/b.g>=1.3*L.wpb/L.g)add("bases","Take the extra base on balls in the dirt.","They average "+(b.wpb/b.g).toFixed(1)+" wild pitches and passed balls a game; D3 is "+(L.wpb/L.g).toFixed(1)+".");
+  var thr=[];Object.keys((d.run||{}).runners||{}).forEach(function(k){var r=d.run.runners[k],p=d.players[+k];if(p&&r[1]>=5)thr.push({p:p,i:+k,a:r[1],s:r[2]});});thr.sort(function(x,y){return y.s-x.s;});
+  var theirRun=b.att/b.g,lgRun=L.g?L.att/L.g:null,ucs=a.dr2&&a.dr2[1]?(a.dr2[1]-a.dr2[2])/a.dr2[1]:null;
+  if(thr.length)add("bases","Hold "+thr.slice(0,3).map(function(x){return nm(x.p,x.i);}).join(", ")+".",thr.slice(0,3).map(function(x){return mxLast(x.p.n)+" "+x.s+" of "+x.a;}).join("; ")+". They run "+theirRun.toFixed(1)+" times a game"+(lgRun?" (D3 "+lgRun.toFixed(1)+")":"")+(ucs!=null?"; our catchers have thrown out "+pc0(ucs):"")+".");
+  // in the field
+  var sc=b.sac||[0,0,0],lsc=((L.sac||{}).all)||[0,0,0];
+  if(sc[0]>=60&&lsc[0]){var rt=sc[1]/sc[0],lr=lsc[1]/lsc[0];if(rt>=1.4*lr)add("field","Expect the sacrifice bunt.","They bunt in "+pct(sc[1],sc[0])+" of sacrifice spots; D3 is "+pct(lsc[1],lsc[0])+".");else if(rt<=.5*lr)add("field","Play the corners back.","They almost never sacrifice: "+sc[1]+" tries in "+sc[0]+" spots.");}
+  var sq=b.sqz||[0,0,0];if(sq[1]>=3)add("field","Watch for the squeeze with a runner on third.","They have tried it "+sq[1]+" times.");
+  var db=b.dbunt||[0,0],ldb=L.dbunt||[0,0];if(db[0]>=10&&ldb[0]&&db[1]/db[0]>=1.3*ldb[1]/ldb[0])add("field","Bunt on them.",db[1]+" of "+db[0]+" bunts against them ended with the batter safe (D3 "+pct(ldb[1],ldb[0],0)+").");
+  if(b.errn!=null&&L.errn&&L.g&&b.errn/b.g>=1.2*L.errn/L.g){var er=Object.keys((d.def||{}).err||{}).map(function(k){return[k,d.def.err[k]];}).sort(function(x,y){return y[1]-x[1];}).slice(0,3);
+    add("field","Make "+er.slice(0,2).map(function(x){return x[0];}).join(" and ")+" make plays.","They average "+(b.errn/b.g).toFixed(1)+" errors a game (D3 "+(L.errn/L.g).toFixed(1)+"): "+er.map(function(x){return x[0]+" "+x[1];}).join(", ")+".");}
+  var secs=[["mound","When they bat"],["plate","When we bat"],["bases","On the bases"],["field","Bunts and defense"]];
+  var html='<div class="card"><h3>Game plan</h3><div class="grid g2 mxplan">'+secs.map(function(sc){return '<div><h4>'+sc[1]+'</h4>'+(G[sc[0]].length?'<ul class="bl">'+G[sc[0]].map(function(x){return "<li>"+x+"</li>";}).join("")+"</ul>":'<div class="note">Nothing here separates them from a typical D3 team.</div>')+"</div>";}).join("")+"</div></div>";
+  // who should pitch
+  if(arms.length){html+='<div class="card"><h3>Who should pitch for us</h3><div style="overflow:auto"><table class="mx"><tr><th>Pitcher</th><th>T</th><th>GS / G</th><th>IP</th><th>Season OPS allowed</th><th>vs RHB</th><th>vs LHB</th><th>Against this lineup</th></tr>'
+    +arms.slice(0,12).map(function(x,n){return '<tr><td class="l">'+esc(x.p.n)+"</td><td>"+x.p.t+"</td><td>"+(x.q.gs||0)+" / "+(x.q.g||0)+"</td><td>"+ipTxt(x.q.o)+"</td><td>"+f3(opsOf(x.A))+"</td><td>"+opsTxt(line(x.q.s[2]),15)+"</td><td>"+opsTxt(line(x.q.s[1]),15)+'</td><td class="'+(n<3?"w":"")+'">'+f3(x.proj)+"</td></tr>";}).join("")
+    +'</table></div><div class="note" style="margin-top:8px">Ranked by the OPS each pitcher would be expected to allow to their regular hitters: his own results against right- and left-handed hitters, weighted by how their lineup bats and by how they hit that kind of pitcher. Small samples are pulled toward his season line, and a short season toward the D3 average, so a few good outings do not put a pitcher on top. Pitchers with 12 or more innings.</div></div>';}
+  // our nine by starter
+  if(ps.length){var hs=[["R","Right-handed starter"],["L","Left-handed starter"]],cols=hs.map(function(h){return mxBats(U,h[0]).slice(0,9);});
+    html+='<div class="card"><h3>Our best nine bats by who starts for them</h3><div style="overflow:auto"><table class="mx"><tr><th></th>'+hs.map(function(h){var who=ps.filter(function(x){return (x.p.t==="L"?"L":"R")===h[0];}).map(function(x){return mxLast(x.p.n);});return '<th class="l">'+h[1]+(who.length?" ("+who.join(", ")+")":" (none of their regular starters)")+"</th>";}).join("")+"</tr>"
+      +[0,1,2,3,4,5,6,7,8].map(function(r){return "<tr><td>"+(r+1)+"</td>"+cols.map(function(c){var h=c[r];return '<td class="l">'+(h?esc(h.p.n)+" <b>"+f3(h.v)+'</b> <span class="note">('+(h.sp?h.sp.pa:0)+")</span>":"–")+"</td>";}).join("")+"</tr>";}).join("")
+      +'</table></div><div class="note" style="margin-top:8px">OPS against that throwing hand, with plate appearances in brackets; small samples are pulled toward the hitter\'s season line. This ranks bats only and does not check that the nine cover every position.</div></div>';}
+  return html;}
 function vMatch(d){var f=usGet(),o=[usPicker()],t=f?teamFolder(f):null;
   if(!t){o.push('<div class="empty"><h2>Set our team</h2><p>Type your school above. This page then shows how we match up with '+esc(d.name)+".</p></div>");return o.join("");}
   if(f===d.folder){o.push('<div class="empty"><h2>This is our team</h2><p>Open an opponent to see the matchup.</p></div>');return o.join("");}
@@ -1601,6 +1673,7 @@ function vMatch(d){var f=usGet(),o=[usPicker()],t=f?teamFolder(f):null;
       +'<div class="tx"><b class="hd">'+hd+"</b>We are rated "+ord(a.rt.rank)+" of "+a.rt.of+" in D3; they are "+ord(b.rt.rank)+". Over a three-game series we would take at least two about "+pc0(P.s3)+" of the time.</div></div>"
       +'<div class="note" style="margin-top:10px">Built from every game score this season, adjusted for who each team played. It knows nothing about who is pitching, who is hurt or where the game is played, so treat it as a starting point.</div></div>');}
   else o.push('<div class="card"><h3>How we should do</h3><div class="note">One of the two teams has too few games to be rated this season, so there is no expected score.</div></div>');
+  o.push(mxPlan(U,d));
   var tk=mxNames(d),rk=mxRanks(),h2h=U.games.filter(function(g){return tk[mxKey(g)]||tk[mxNorm(mxClean(g[1]))];});
   var uo=mxOpp(U,tk,rk),to=mxOpp(d,mxNames(U),rk),com=Object.keys(uo).filter(function(k){return to[k];}).map(function(k){return[uo[k],to[k]];});
   com.sort(function(x,y){return (y[0].g+y[1].g)-(x[0].g+x[1].g)||x[0].n.localeCompare(y[0].n);});
