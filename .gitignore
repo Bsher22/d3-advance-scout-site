@@ -1,0 +1,5 @@
+# The site folder IS published (Cloudflare reads it from GitHub).
+node_modules/
+.dev.vars
+.wrangler/
+__pycache__/

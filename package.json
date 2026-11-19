@@ -1,0 +1,6 @@
+{
+  "name": "d3-advance-scout-site",
+  "private": true,
+  "description": "Cloudflare Pages deployment of the scouting site",
+  "devDependencies": { "wrangler": "^4.0.0" }
+}

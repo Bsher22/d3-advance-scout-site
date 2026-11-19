@@ -1,0 +1,9 @@
+# Cloudflare Pages project for the scouting site.
+name = "d3-advance-scout-site"
+pages_build_output_dir = "site"
+compatibility_date = "2026-01-01"
+
+# Paste the id printed by:  npx wrangler kv namespace create SCOUT_USERS
+[[kv_namespaces]]
+binding = "SCOUT_USERS"
+id = "75ece99d617f47fd9afa5bb7bba4a6e0"
