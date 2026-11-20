@@ -1,5 +1,6 @@
 // Login for the scouting site. Every page and data file passes through here.
-// Accounts live in the SCOUT_USERS key-value store as  user:<username> -> {name, salt, hash, iter, role, must_change, disabled}
+// Accounts live in the SCOUT_USERS key-value store as  user:<username> -> {name, salt, hash, iter, role, team, must_change, disabled}
+// team is the folder name of the coach's own school; the Matchup page compares every opponent with it. Set with users.py.
 // Sessions are a signed cookie; SESSION_SECRET signs it.
 
 const COOKIE = "sc_session";
@@ -71,7 +72,7 @@ ${msg ? `<div class="${good ? "ok" : "err"}" role="alert">${esc(msg)}</div>` : "
 <form method="post" action="/account"><label for="o">Current password</label><input id="o" name="old" type="password" autocomplete="current-password" required>
 <label for="n">New password (at least 10 characters)</label><input id="n" name="new" type="password" autocomplete="new-password" minlength="10" required>
 <label for="c">New password again</label><input id="c" name="again" type="password" autocomplete="new-password" minlength="10" required>
-<button type="submit">Save password</button></form><p class="s">Signed in as ${esc(user.name || "")}. ${forced ? "" : '<a href="/">Back to the reports</a> · '}<a href="/logout">Sign out</a></p>`);
+<button type="submit">Save password</button></form><p class="s">Signed in as ${esc(user.name || "")}${user.team ? " · team: " + esc(user.team_name || user.team) : ""}. ${forced ? "" : '<a href="/">Back to the reports</a> · '}<a href="/logout">Sign out</a></p>`);
 
 const safeNext = (n) => (typeof n === "string" && n.startsWith("/") && !n.startsWith("//") ? n : "/");
 
@@ -128,8 +129,55 @@ export async function onRequest(context) {
   }
   if (user.must_change) return new Response(null, { status: 302, headers: { Location: "/account" } });
 
-  if (path === "/api/me") return new Response(JSON.stringify({ username: session.u, name: user.name || session.u, role: user.role || "coach" }),
+  if (path === "/api/me") return new Response(JSON.stringify({ username: session.u, name: user.name || session.u, role: user.role || "coach", team: user.team || "" }),
     { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+
+  // An admin may switch the school his own account is tied to from the Matchup page; coaches are set with users.py.
+  if (path === "/api/me/team") {
+    if (request.method !== "POST") return new Response("POST only.", { status: 405 });
+    if ((user.role || "coach") !== "admin") return new Response("Only an admin account can change its team here.", { status: 403 });
+    let team = "";
+    try { team = String((await request.json()).team || "").trim().toLowerCase(); } catch (e) { return new Response("Bad request.", { status: 400 }); }
+    if (team && !/^[a-z0-9][a-z0-9._-]{0,79}$/.test(team)) return new Response("Bad team.", { status: 400 });
+    const updated = { ...user };
+    delete updated.team_name;
+    if (team) updated.team = team; else delete updated.team;
+    await env.SCOUT_USERS.put("user:" + session.u, JSON.stringify(updated));
+    return new Response(JSON.stringify({ team }), { headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+  }
+
+  // Coach grades for a team's own players, shared by everyone signed in for that team:  grades:<team> -> {players:{key:{...}}, updated, by}
+  if (path === "/api/grades") {
+    const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+    const okTeam = (t) => /^[a-z0-9][a-z0-9._-]{0,79}$/.test(t) && ((user.role || "coach") === "admin" || user.team === t);
+    if (request.method === "GET") {
+      const team = String(url.searchParams.get("team") || "");
+      if (!okTeam(team)) return json({ error: "Not your team." }, 403);
+      const t = await env.SCOUT_USERS.get("grades:" + team);
+      return json(t ? JSON.parse(t) : { players: {} });
+    }
+    if (request.method !== "POST") return json({ error: "GET or POST only." }, 405);
+    const raw = await request.text();
+    if (raw.length > 120000) return json({ error: "Too large." }, 413);
+    let body;
+    try { body = JSON.parse(raw); } catch (e) { return json({ error: "Bad request." }, 400); }
+    const team = String(body.team || "");
+    if (!okTeam(team)) return json({ error: "Not your team." }, 403);
+    const players = {};
+    const grade = (v) => { const n = Math.round(Number(v) * 2) / 2; return n >= 1 && n <= 5 ? n : undefined; };      // 1 to 5, 3 is average
+    for (const [k, p] of Object.entries(body.players || {}).slice(0, 150)) {
+      if (!/^[a-z0-9]{1,60}$/.test(k) || !p || typeof p !== "object") continue;
+      const rec = { n: String(p.n || "").slice(0, 60) };
+      for (const t of ["hit", "eye", "pow", "run"]) { const g = grade(p[t]); if (g) rec[t] = g; }
+      if (p.b && /^[LRS]$/.test(p.b)) rec.b = p.b;
+      if (p.pos) rec.pos = String(p.pos).toUpperCase().replace(/[^A-Z0-9, ]/g, "").slice(0, 40);
+      if (p.add) rec.add = 1;
+      if (rec.add || rec.hit || rec.eye || rec.pow || rec.run) players[k] = rec;
+    }
+    const out = { players, updated: new Date().toISOString(), by: session.u };
+    await env.SCOUT_USERS.put("grades:" + team, JSON.stringify(out));
+    return json(out);
+  }
 
   const res = await next();
   const out = new Response(res.body, res);

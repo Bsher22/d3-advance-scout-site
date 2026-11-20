@@ -55,11 +55,20 @@ Run these in a terminal from `scouting\deploy`. You need Node.js (you already ha
 | To do this | Run |
 |---|---|
 | Update the site after new games | `publish.bat` (builds, then pushes to GitHub; Cloudflare publishes it) |
+| Add a coach tied to his school | `python users.py add jsmith "John Smith" --team "Rochester Tech"` |
+| Set or change the school on an account | `python users.py team jsmith "Rochester Tech"` (`none` clears it) |
 | See who has an account | `python users.py list` |
 | Coach forgot his password | `python users.py reset jsmith` |
 | Coach leaves the staff | `python users.py remove jsmith` (or `disable`) |
 
 Account changes take effect within about a minute. They do not need a publish.
+
+## Our team
+
+The Matchup page compares every opponent with the school tied to the sign-in.
+
+- A coach's school is set on his account with `users.py` and he cannot change it.
+- An admin account can switch to any school from the Matchup page; the choice is saved to the account and follows it to every device.
 
 ## How the login works
 

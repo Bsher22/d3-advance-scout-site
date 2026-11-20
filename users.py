@@ -3,7 +3,11 @@
 
     python scouting/deploy/users.py add jsmith "John Smith"          new account, prints a temporary password
     python scouting/deploy/users.py add bsher "Brian" --role admin
+    python scouting/deploy/users.py add jsmith "John Smith" --team "Rochester Tech"     account tied to a school
+    python scouting/deploy/users.py team jsmith "Rochester Tech"     set or change the school on an account
+    python scouting/deploy/users.py team jsmith none                 clear it
     python scouting/deploy/users.py reset jsmith                     new temporary password
+    python scouting/deploy/users.py add jsmith "John Smith" --password "..."     use a password you choose (10+ characters)
     python scouting/deploy/users.py disable jsmith                   blocks sign-in, keeps the account
     python scouting/deploy/users.py enable jsmith
     python scouting/deploy/users.py remove jsmith
@@ -73,12 +77,28 @@ def put(username, rec, local):
         os.remove(path)
 
 
+def find_team(text):
+    """Folder and display name of a school, from its folder name or its name as the site shows it."""
+    p = os.path.join(os.path.dirname(HERE), "data", "index.js")
+    if not os.path.exists(p):
+        sys.exit("scouting/data/index.js was not found, so the school cannot be checked. Build the scouting data first.")
+    teams = re.findall(r'\{"f":"([^"]+)","n":"([^"]+)"', open(p, encoding="utf-8").read())
+    want = text.strip().lower()
+    hit = [t for t in teams if want in (t[0].lower(), t[1].lower())]
+    if len(hit) == 1:
+        return hit[0]
+    near = [t for t in teams if want in t[0].lower() or want in t[1].lower()][:8]
+    sys.exit('No school is named exactly "%s".%s' % (text, (" Did you mean: " + ", ".join('"%s"' % t[1] for t in near)) if near else ""))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("action", choices=["add", "reset", "disable", "enable", "remove", "list"])
+    ap.add_argument("action", choices=["add", "reset", "disable", "enable", "remove", "list", "team"])
     ap.add_argument("username", nargs="?")
     ap.add_argument("name", nargs="?")
     ap.add_argument("--role", default="coach", choices=["coach", "admin"])
+    ap.add_argument("--team", help="the coach's own school, by name or folder (add only)")
+    ap.add_argument("--password", help="set this password instead of a temporary one (add and reset); he is not asked to change it")
     ap.add_argument("--local", action="store_true")
     a = ap.parse_args()
 
@@ -90,7 +110,7 @@ def main():
         for k in sorted(keys):
             r = get(k[5:], a.local) or {}
             state = "disabled" if r.get("disabled") else "temporary password not yet changed" if r.get("must_change") else "active"
-            print("%-18s %-26s %-6s %s" % (k[5:], r.get("name", ""), r.get("role", ""), state))
+            print("%-18s %-26s %-6s %-22s %s" % (k[5:], r.get("name", ""), r.get("role", ""), r.get("team_name") or r.get("team") or "(no team)", state))
         return
 
     if not a.username:
@@ -103,21 +123,45 @@ def main():
     if a.action == "add":
         if rec:
             sys.exit("%s already exists. Use reset to give him a new temporary password." % u)
-        pw = temp_password()
+        tm = find_team(a.team) if a.team else None
+        if a.password and len(a.password) < 10:
+            sys.exit("Use at least 10 characters for the password.")
+        pw = a.password or temp_password()
         salt, h = make_hash(pw)
-        put(u, {"name": a.name or u, "role": a.role, "salt": salt, "hash": h, "iter": ITER, "must_change": True,
-                "created": datetime.date.today().isoformat()}, a.local)
-        print("Created %s (%s).\n  Username: %s\n  Temporary password: %s\nHe will be asked to choose his own on first sign-in." % (u, a.name or u, u, pw))
+        new = {"name": a.name or u, "role": a.role, "salt": salt, "hash": h, "iter": ITER, "must_change": not a.password,
+               "created": datetime.date.today().isoformat()}
+        if tm:
+            new["team"], new["team_name"] = tm
+        put(u, new, a.local)
+        if a.password:
+            print("Created %s (%s) with the password you gave. He can change it at /account." % (u, a.name or u))
+        else:
+            print("Created %s (%s).\n  Username: %s\n  Temporary password: %s\nHe will be asked to choose his own on first sign-in." % (u, a.name or u, u, pw))
+        print("  Team: %s" % (tm[1] if tm else "none set (python users.py team %s \"School name\")" % u))
         return
     if not rec:
         sys.exit("No account named %s." % u)
+    if a.action == "team":
+        if not a.name:
+            sys.exit('Give the school, for example:  python users.py team %s "Rochester Tech"   (or none to clear it)' % u)
+        if a.name.strip().lower() == "none":
+            rec.pop("team", None); rec.pop("team_name", None)
+            put(u, rec, a.local)
+            print("%s no longer has a team." % u)
+        else:
+            rec["team"], rec["team_name"] = find_team(a.name)
+            put(u, rec, a.local)
+            print("%s is now tied to %s. He sees it the next time he opens the site." % (u, rec["team_name"]))
+        return
     if a.action == "reset":
-        pw = temp_password()
+        if a.password and len(a.password) < 10:
+            sys.exit("Use at least 10 characters for the password.")
+        pw = a.password or temp_password()
         rec["salt"], rec["hash"] = make_hash(pw)
-        rec["iter"], rec["must_change"] = ITER, True
+        rec["iter"], rec["must_change"] = ITER, not a.password
         put(u, rec, a.local)
         clear_lock(u, a.local)
-        print("New temporary password for %s: %s" % (u, pw))
+        print("Password for %s set to the one you gave." % u if a.password else "New temporary password for %s: %s" % (u, pw))
     elif a.action in ("disable", "enable"):
         rec["disabled"] = a.action == "disable"
         put(u, rec, a.local)
