@@ -20,6 +20,10 @@ nav[data-sec] button.on{color:var(--sc);border-bottom-color:var(--sc)}
 .mxplan>div[data-sec]{border-left:3px solid var(--sc);padding:2px 0 2px 12px}.mxplan>div[data-sec]>h4{color:var(--sc)}
 .seclegend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 12px;font-size:12.5px;color:var(--mut)}.seclegend span{display:inline-flex;align-items:center;gap:6px}.seclegend i{width:9px;height:9px;border-radius:2px;background:var(--sc);display:inline-block}
 @media print{.seclegend{display:none}}
+.grid.g2{align-items:stretch}.grid.g2>.card{margin-bottom:0}.grid.g2{margin-bottom:14px}.card.wide ul.kt:has(>li:only-child),.card.wide ul.ins:has(>li:only-child){columns:1}
+.grid.g2>.card.wide{grid-column:1/-1}
+.card.wide ul.ins,.card.wide ul.kt{columns:2 340px;column-gap:34px}.card.wide ul.ins li,.card.wide ul.kt li{break-inside:avoid}.card.wide ul.ins li:last-child{border-bottom:1px solid #eef1f3}
+#view .card:not(.pr .card)>h3{font-size:17px;letter-spacing:.4px;margin-bottom:12px}#view .card.fold:not(.pr .card)>h3{min-height:34px}#view .card[data-sec]:not(.pr .card)>h3:before{width:11px;height:11px}
 .tmbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 14px}.tmbar input{font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;min-width:min(260px,100%);min-height:40px}
 .tmbar .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}.tmbar .seg button{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border:0;background:none;cursor:pointer;min-height:40px;color:var(--ink)}.tmbar .seg button.on{background:var(--navy);color:#fff}
 .tmgrp{margin:0 0 16px}.tmgrp h3{margin:0 0 8px;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}.tmgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(165px,100%),1fr));gap:8px}
@@ -56,7 +60,7 @@ details.more.card>summary{font-size:13px;text-transform:uppercase;letter-spacing
 @media(max-width:700px){.doors{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.tgroups>*{flex:1 1 100%!important;min-width:0!important}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tile{min-width:0}.tile .th{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.card.fold>h3:after{transition:none}}
-.grid:has(>.card.fold){align-items:start}
+.grid:has(>.card.fold.shut){align-items:start}
 .uspick{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.uspick input{font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;min-width:min(300px,100%);min-height:40px}
 .uspick button{font:inherit;font-size:13.5px;border:0;background:none;color:#44515d;text-decoration:underline;cursor:pointer;min-height:36px}.uspick .note{flex:1 1 100%;margin:0}
 .mxv{display:flex;flex-wrap:wrap;gap:18px;align-items:center}.mxv .sc{font-size:34px;font-weight:800;color:var(--ink);line-height:1.05;white-space:nowrap}.mxv .sc small{display:block;font-size:12.5px;font-weight:600;color:#5d6b78;margin-top:4px}
@@ -481,6 +485,12 @@ function colorCards(){var v=$("view"),seen={};if(!v)return;
   var names={hit:"Their hitters",pit:"Their pitching",run:"Running and bunting",def:"Catching and defense",us:"Our team",gen:"Overall picture"},ks=["hit","pit","run","def","us","gen"].filter(function(k){return seen[k];});
   if(ks.length>1&&S.tab!=="print"&&S.tab!=="game"&&!v.querySelector(".seclegend")){var lg=document.createElement("div");lg.className="seclegend np";lg.innerHTML=ks.map(function(k){return '<span data-sec="'+k+'"><i></i>'+names[k]+"</span>";}).join("");
     var first=v.querySelector(".card[data-sec]");while(first&&first.parentNode!==v)first=first.parentNode;if(first)v.insertBefore(lg,first);}}
+function evenCols(){if(S.tab==="print")return;
+  [].forEach.call(document.querySelectorAll("#view .grid.g2"),function(g){if(g.closest(".pr")||g.classList.contains("mxplan"))return;
+    var cards=[].filter.call(g.children,function(c){return c.classList&&c.classList.contains("card");}),rest=[];
+    cards.forEach(function(c){c.classList.remove("wide");if(c.querySelector(":scope > ul.ins, :scope > .cbody > ul.ins, :scope > ul.kt, :scope > .cbody > ul.kt"))c.classList.add("wide");else rest.push(c);});
+    if(rest.length%2===1){var last=rest[rest.length-1];last.classList.add("wide");
+}});}
 function tmSort(){try{return localStorage.getItem("d3s_teamsort")==="conf"?"conf":"az";}catch(e){return "az";}}
 function showTeams(){var mode=tmSort(),us=usGet(),q=mxNorm(S.tmq||""),T=IDX.teams.filter(function(t){return !q||mxNorm(t.n).indexOf(q)>=0||mxNorm(t.c).indexOf(q)>=0;}),groups={},order=[];
   T.forEach(function(t){var k=mode==="conf"?(t.c||"Other").toUpperCase():(t.n.charAt(0).toUpperCase());if(!groups[k]){groups[k]=[];order.push(k);}groups[k].push(t);});
@@ -531,7 +541,7 @@ function render(){renderTabs();if(S.tab==="teams"){showTeams();return;}var d=D()
   if(S.tab==="player"){if(!careerReady()){$("view").innerHTML='<div class="empty">Loading every season…</div>';loadCareer(render);return;}$("view").innerHTML=subNav()+'<div class="plv">'+vPlayer(d)+"</div>";colorCards();bind();return;}
   if((S.tab==="match"||S.tab==="depth")&&grdNeedsLoad()){$("view").innerHTML='<div class="empty">Loading…</div>';grdLoad(render);return;}
   if((S.tab==="match"||S.tab==="depth")&&usNeedsLoad()){$("view").innerHTML='<div class="empty">Loading our team…</div>';var uk=usGet()+"_"+S.season;loadTeam(usGet(),S.season,function(x){if(!x)USFAIL[uk]=1;render();});return;}
-  var v={brief:vBrief,card:vCard,print:vPrint,key:vKey,overview:vOverview,hitters:vHitters,run:vRun,bunt:vBunt,pit:vPit,use:vUse,roster:vRoster,game:vGame,posn:vPosn,bench:vBench,match:vMatch,depth:vDepth}[S.tab]||vBrief;$("view").innerHTML=subNav()+(S.tab==="print"||S.tab==="game"||S.tab==="depth"?"":head(d))+v(d);foldCards();colorCards();bind();if(S.tab==="match"||S.tab==="depth"){matchBind();grdBind();}}
+  var v={brief:vBrief,card:vCard,print:vPrint,key:vKey,overview:vOverview,hitters:vHitters,run:vRun,bunt:vBunt,pit:vPit,use:vUse,roster:vRoster,game:vGame,posn:vPosn,bench:vBench,match:vMatch,depth:vDepth}[S.tab]||vBrief;$("view").innerHTML=subNav()+(S.tab==="print"||S.tab==="game"||S.tab==="depth"?"":head(d))+v(d);foldCards();evenCols();colorCards();bind();if(S.tab==="match"||S.tab==="depth"){matchBind();grdBind();}}
 function head(d){var s=d.sum;return '<div style="margin-bottom:14px"><h2>'+esc(d.name)+' <span class="sub">'+esc(d.conf||"")+" · "+d.season+'</span></h2><div class="sub">'+s.w+"-"+s.l+(s.t?"-"+s.t:"")+" in "+s.g+" games with play-by-play · "+(s.rs/s.g).toFixed(1)+" runs scored / "+(s.ra/s.g).toFixed(1)+" allowed per game"+(s.rt?" · rated "+ord(s.rt.rank)+" of "+s.rt.of+" in D3 · schedule "+ord(s.rt.sosRank)+" toughest":"")+"</div></div>";}
 
 /* ---------- league ranks ---------- */
