@@ -13,6 +13,7 @@ header h1{font-size:17px;margin:0 10px 0 0;letter-spacing:.2px;white-space:nowra
 header h1 span{color:#8fd3a6}
 header input,header select{font:inherit;padding:7px 10px;border-radius:6px;border:1px solid #33506b;background:#fff;color:var(--ink)}
 header input{width:260px}
+#myTeam{font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:6px;border:1px solid #5fbf86;background:transparent;color:#bfe9cf;cursor:pointer;min-height:36px;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#myTeam:hover{background:#1d3a55}
 #allTeams{font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:6px;border:1px solid #33506b;background:transparent;color:#fff;cursor:pointer;min-height:36px}#allTeams:hover{background:#1d3a55}
 [data-sec=hit]{--sc:#1c5d99;--sct:#eef4fa}[data-sec=pit]{--sc:#7a3e9d;--sct:#f5eff9}[data-sec=run]{--sc:#b26a00;--sct:#fbf3e6}[data-sec=def]{--sc:#0f766e;--sct:#e9f5f3}[data-sec=us]{--sc:#1b7a3d;--sct:#ecf6ef}[data-sec=gen]{--sc:#44515d;--sct:#f1f3f5}
 .card[data-sec]{border-top:3px solid var(--sc)}.card[data-sec]>h3{color:var(--sc)}.card[data-sec]>h3:before{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--sc);margin-right:8px;flex:0 0 auto;vertical-align:baseline}
@@ -29,6 +30,9 @@ table.ug td.hc i{display:block;font-style:normal;font-weight:500;font-size:9.5px
 .hc.st{background:var(--navy);color:#fff}.hc.dh{background:#5d6b78;color:#fff}.hc.ph{background:#f3c98b;color:#3b2a08}.hc.pr{background:#bfe3dd;color:#0b4f49}.hc.df{background:#e3e8ec;color:#44515d}
 .hc.off{box-shadow:inset 0 -4px 0 var(--bad)}
 .hkey{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--mut)}.hkey span{display:inline-flex;align-items:center;gap:6px}.hkey b{display:inline-block;width:22px;height:16px;border-radius:2px}
+table.ci td,table.ci th{text-align:right;white-space:nowrap}table.ci td:first-child,table.ci th:first-child{text-align:left;white-space:normal}table.ci td.l,table.ci th.l{text-align:left;white-space:normal}
+table.ci td.up{background:#e4eef8;font-weight:700}table.ci td.dn{background:#f4f1ea;color:#6b5a2e}table.ci td.d3{color:var(--mut)}table.ci tr.grp td{background:#f1f3f5;font-weight:700;text-transform:none;color:var(--ink)}
+.cichips{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 2px}.cichip{border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:150px;background:#fff}.cichip b{display:block;font-size:13px;color:var(--mut)}.cichip span{font-size:16px;font-weight:700}
 .gds2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:22px 32px}.gds2 h4{margin:0 0 10px;font-size:16px}.gds2 .gdset{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 .cfpos{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:2px 0 4px}
 .cfp{font:inherit;text-align:left;border:1px solid var(--line);border-radius:8px;background:#fff;padding:9px 11px;cursor:pointer;color:var(--ink);min-height:74px}.cfp b{display:block;font-size:17px}.cfp .v{font-size:15px;font-weight:700}.cfp span{display:block;font-size:12.5px;color:var(--mut)}
@@ -406,6 +410,7 @@ a{color:inherit!important;text-decoration:none}.plr{padding:1.5px 0;gap:8px}.pln
   <input id="teamIn" list="teamList" placeholder="Search opponent…" autocomplete="off">
   <datalist id="teamList"></datalist>
   <button id="allTeams" type="button">All teams</button>
+  <button id="myTeam" type="button" hidden>My team</button>
   <select id="seasonSel"></select>
   <div class="built" id="built"></div>
 </header>
@@ -425,8 +430,8 @@ var S={player:"",pscope:"",back:"roster",team:null,season:null,tab:"brief",hand:
 var TABS=[["game","Gameday"],["brief","1 · Briefing"],["card","2 · Scorecard"],["key","3 · By phase"],["roster","Players"],["hitters","Spray charts"],["run","Running game"],["bunt","Bunting"],["pit","Pitching & defense"],["use","Pitcher usage"],["overview","Team data"],["print","Full report"]];
 /* The top bar has six tabs. Views that belong together share one tab and are switched with the small row under it. */
 var NAV=[["game","Gameday",["game"]],["brief","Report",["brief"]],["match","Matchup",["match","depth"]],["roster","Hitters",["roster","huse","posn","hitters","bench","conf"]],["pit","Pitchers",["pit","use"]],
-         ["run","Running & bunting",["run","bunt"]],["card","More",["card","key","overview","print"]]];
-var SUBL={huse:"Who plays when",conf:"Conference by position",match:"Us against them",depth:"Our depth chart",roster:"Players",posn:"Positioning card",bench:"Off the bench",hitters:"Spray charts",pit:"Staff & defense",use:"Who pitches when",run:"Running game",bunt:"Bunting",card:"Scorecard",key:"By phase",overview:"Team data",print:"Full report"};
+         ["run","Running & bunting",["run","bunt"]],["card","More",["card","key","overview","coach","print"]]];
+var SUBL={coach:"Coach intel",huse:"Who plays when",conf:"Conference by position",match:"Us against them",depth:"Our depth chart",roster:"Players",posn:"Positioning card",bench:"Off the bench",hitters:"Spray charts",pit:"Staff & defense",use:"Who pitches when",run:"Running game",bunt:"Bunting",card:"Scorecard",key:"By phase",overview:"Team data",print:"Full report"};
 function navGroup(t){t=t==="player"?"roster":t;for(var i=0;i<NAV.length;i++)if(NAV[i][2].indexOf(t)>=0)return NAV[i];return NAV[1];}
 function subNav(){var g=navGroup(S.tab),cur=S.tab==="player"?"roster":S.tab,fold=FOLD[S.tab];
   if(g[2].length<2&&!fold)return"";
@@ -475,11 +480,12 @@ function whoAmI(){if(location.protocol.indexOf("http")!==0||!window.fetch)return
   fetch("/api/me",{credentials:"same-origin"}).then(function(r){return r.ok?r.json():null;}).then(function(u){if(!u)return;
     var was=ACCT.team,wasA=ACCT.admin;ACCT.team=u.team||"";ACCT.admin=u.role==="admin";ACCT.known=true;try{localStorage.setItem("d3s_acct_team",ACCT.team);localStorage.setItem("d3s_acct_admin",ACCT.admin?"1":"");}catch(e){}
     var tm=ACCT.team&&IDX?teamFolder(ACCT.team):null;if((was!==ACCT.team||wasA!==ACCT.admin)&&(S.tab==="match"||S.tab==="depth")&&S.team)render();
-    var el=$("built");if(el)el.innerHTML=esc(u.name)+(tm?" · "+esc(tm.n):"")+' · <a href="/account" style="color:inherit">Password</a> · <a href="/logout" style="color:inherit">Sign out</a>';}).catch(function(){});}
-var SEC_TAB={huse:"hit",conf:"hit",pit:"pit",use:"pit",run:"run",bunt:"run",hitters:"hit",roster:"hit",bench:"hit",posn:"def",depth:"us",match:"us",player:"hit",game:"hit"};
+    myTeamBtn();var el=$("built");if(el)el.innerHTML=esc(u.name)+(tm?" · "+esc(tm.n):"")+' · <a href="/account" style="color:inherit">Password</a> · <a href="/logout" style="color:inherit">Sign out</a>';}).catch(function(){});}
+var SEC_TAB={coach:"gen",huse:"hit",conf:"hit",pit:"pit",use:"pit",run:"run",bunt:"run",hitters:"hit",roster:"hit",bench:"hit",posn:"def",depth:"us",match:"us",player:"hit",game:"hit"};
 function secOf(txt,tab){var t=txt.toLowerCase();
   if(tab==="depth")return "us";
   if(tab==="conf"||tab==="huse")return "hit";
+  if(tab==="coach")return /when they run/.test(t)?"run":/when they bunt/.test(t)?"run":"gen";
   if(/strength and schedule|results by opponent|built on|short version|three keys|beat you|beat them|graded areas|numbers hold up/.test(t))return "gen";
   if(/how we should do|game plan|suggested lineup|head to head|common opponents|side by side|our best nine/.test(t))return "us";
   if(/run production|how they score/.test(t))return "hit";
@@ -509,11 +515,17 @@ function showTeams(){var mode=tmSort(),us=usGet(),q=mxNorm(S.tmq||""),T=IDX.team
   if(mode==="conf"&&us){var uc=String((teamFolder(us)||{}).c||"").toUpperCase();if(uc&&groups[uc]){order.splice(order.indexOf(uc),1);order.unshift(uc);}}
   function btn(t){var ys=Object.keys(t.s).sort(),y=ys[ys.length-1],x=t.s[y]||{};return '<button class="tmb'+(t.f===us?" us":"")+'" data-tm="'+esc(t.f)+'"><b>'+esc(t.n)+"</b><span>"+(mode==="conf"?"":esc(t.c||"")+" · ")+y+": "+x.w+"-"+x.l+(x.t?"-"+x.t:"")+(t.f===us?" · our team":"")+"</span></button>";}
   var body=order.map(function(k){var g=groups[k].slice().sort(function(a,b){return a.n.localeCompare(b.n);});return '<div class="tmgrp"><h3>'+esc(k)+(mode==="conf"?" · "+g.length+" teams":"")+'</h3><div class="tmgrid">'+g.map(btn).join("")+"</div></div>";}).join("");
-  $("view").innerHTML='<h2 style="margin:6px 0 10px">Select a team</h2><div class="tmbar"><div class="seg" role="group" aria-label="Sort teams"><button data-ts="az" class="'+(mode==="az"?"on":"")+'">A to Z</button><button data-ts="conf" class="'+(mode==="conf"?"on":"")+'">By conference</button></div>'
+  $("view").innerHTML='<h2 style="margin:6px 0 '+(S.pickUs?"4px":"10px")+'">'+(S.pickUs?"Pick my team":"Select a team")+"</h2>"+(S.pickUs?'<div class="note" style="margin:0 0 10px">Every opponent is compared with this team on the Matchup, depth chart and Gameday pages. '+(us?'<a href="#" id="tmClr">Clear my team</a> · ':"")+'<a href="#" id="tmCancel">Cancel</a></div>':"")+'<div class="tmbar"><div class="seg" role="group" aria-label="Sort teams"><button data-ts="az" class="'+(mode==="az"?"on":"")+'">A to Z</button><button data-ts="conf" class="'+(mode==="conf"?"on":"")+'">By conference</button></div>'
     +'<input id="tmq" placeholder="Filter by school or conference" value="'+esc(S.tmq||"")+'" autocomplete="off"><span class="note">'+T.length+" of "+IDX.teams.length+" teams</span></div>"+(body||'<div class="empty">No team matches that.</div>');
   var v=$("view");v.querySelectorAll("button[data-ts]").forEach(function(b){b.onclick=function(){try{localStorage.setItem("d3s_teamsort",b.getAttribute("data-ts"));}catch(e){}showTeams();};});
-  v.querySelectorAll("button[data-tm]").forEach(function(b){b.onclick=function(){S.tab=S.prevTab&&S.prevTab!=="teams"?S.prevTab:"brief";S.tmq="";pick(b.getAttribute("data-tm"),null);window.scrollTo(0,0);};});
+  function back(){S.pickUs=false;S.tmq="";S.tab=S.prevTab&&S.prevTab!=="teams"?S.prevTab:"brief";if(S.team)render();else{S.tab="teams";showTeams();}window.scrollTo(0,0);}
+  v.querySelectorAll("button[data-tm]").forEach(function(b){b.onclick=function(){var f=b.getAttribute("data-tm");
+    if(S.pickUs){S.pickUs=false;S.tmq="";S.tab=S.prevTab&&S.prevTab!=="teams"?S.prevTab:"brief";if(!S.team)S.tab="teams";usSave(f);myTeamBtn();window.scrollTo(0,0);return;}
+    S.tab=S.prevTab&&S.prevTab!=="teams"?S.prevTab:"brief";S.tmq="";pick(f,null);window.scrollTo(0,0);};});
+  var tc=$("tmClr"),tx=$("tmCancel");if(tc)tc.onclick=function(e){e.preventDefault();usSave("");back();myTeamBtn();};if(tx)tx.onclick=function(e){e.preventDefault();back();};
   var qi=$("tmq");qi.oninput=function(){S.tmq=qi.value;var pos=qi.selectionStart;showTeams();var n=$("tmq");n.focus();try{n.setSelectionRange(pos,pos);}catch(e){}};}
+function myTeamBtn(){var b=$("myTeam");if(!b||!IDX)return;var ok=!ACCT.on||ACCT.admin;b.hidden=!ok;if(!ok)return;var t=usGet()?teamFolder(usGet()):null;b.textContent=t?"My team: "+t.n:"Pick my team";b.title="Choose the team every opponent is compared with";}
+function openMyTeam(){if(ACCT.on&&!ACCT.admin)return;S.pickUs=true;openTeams();}
 function openTeams(){if(S.tab!=="teams")S.prevTab=S.tab;S.tab="teams";renderTabs();showTeams();window.scrollTo(0,0);}
 function init(){
   whoAmI();
@@ -526,7 +538,8 @@ function init(){
   $("tabs").onclick=function(e){var t=e.target.getAttribute("data-t");if(t&&S.team){S.tab=t;setHash();render();}};
   $("teamIn").onchange=function(){var t=teamByName(this.value);if(t){if(S.tab==="teams")S.tab=S.prevTab&&S.prevTab!=="teams"?S.prevTab:"brief";pick(t.f,null);}};
   $("seasonSel").onchange=function(){pick(S.team,this.value);};
-  $("allTeams").onclick=openTeams;
+  $("allTeams").onclick=function(){S.pickUs=false;openTeams();};
+  $("myTeam").onclick=openMyTeam;myTeamBtn();
   $("modal").onclick=function(e){if(e.target===this||e.target.className==="x")this.className="modal";};
   var h=readHash();if(h.tab)S.tab=h.tab;if(h.p)S.player=h.p;
   window.addEventListener("hashchange",function(){var h=readHash();if(!h.team)return;
@@ -551,9 +564,10 @@ function renderTabs(){var cur=navGroup(S.tab)[0];[].forEach.call($("tabs").child
 function render(){renderTabs();if(S.tab==="teams"){showTeams();return;}var d=D();if(!d)return;
   if(S.tab==="player"){if(!careerReady()){$("view").innerHTML='<div class="empty">Loading every season…</div>';loadCareer(render);return;}$("view").innerHTML=subNav()+'<div class="plv">'+vPlayer(d)+"</div>";colorCards();bind();return;}
   if(S.tab==="conf"&&cfNeedsLoad()){cfLoad();return;}
+  if(S.tab==="coach"&&ciNeedsLoad()){ciLoad();return;}
   if((S.tab==="match"||S.tab==="depth")&&grdNeedsLoad()){$("view").innerHTML='<div class="empty">Loading…</div>';grdLoad(render);return;}
   if((S.tab==="match"||S.tab==="depth"||S.tab==="game")&&usNeedsLoad()){$("view").innerHTML='<div class="empty">Loading our team…</div>';var uk=usGet()+"_"+S.season;loadTeam(usGet(),S.season,function(x){if(!x)USFAIL[uk]=1;render();});return;}
-  var v={brief:vBrief,card:vCard,print:vPrint,key:vKey,overview:vOverview,hitters:vHitters,run:vRun,bunt:vBunt,pit:vPit,use:vUse,roster:vRoster,game:vGame,posn:vPosn,bench:vBench,match:vMatch,depth:vDepth,conf:vConf,huse:vHuse}[S.tab]||vBrief;$("view").innerHTML=subNav()+(S.tab==="print"||S.tab==="game"||S.tab==="depth"?"":head(d))+v(d);foldCards();evenCols();colorCards();bind();if(S.tab==="match"||S.tab==="depth"){matchBind();grdBind();}if(S.tab==="conf")cfBind();if(S.tab==="huse")huBind();}
+  var v={brief:vBrief,card:vCard,print:vPrint,key:vKey,overview:vOverview,hitters:vHitters,run:vRun,bunt:vBunt,pit:vPit,use:vUse,roster:vRoster,game:vGame,posn:vPosn,bench:vBench,match:vMatch,depth:vDepth,conf:vConf,huse:vHuse,coach:vCoach}[S.tab]||vBrief;$("view").innerHTML=subNav()+(S.tab==="print"||S.tab==="game"||S.tab==="depth"?"":head(d))+v(d);foldCards();evenCols();colorCards();bind();if(S.tab==="match"||S.tab==="depth"){matchBind();grdBind();}if(S.tab==="conf")cfBind();if(S.tab==="huse")huBind();}
 function head(d){var s=d.sum;return '<div style="margin-bottom:14px"><h2>'+esc(d.name)+' <span class="sub">'+esc(d.conf||"")+" · "+d.season+'</span></h2><div class="sub">'+s.w+"-"+s.l+(s.t?"-"+s.t:"")+" in "+s.g+" games with play-by-play · "+(s.rs/s.g).toFixed(1)+" runs scored / "+(s.ra/s.g).toFixed(1)+" allowed per game"+(s.rt?" · rated "+ord(s.rt.rank)+" of "+s.rt.of+" in D3 · schedule "+ord(s.rt.sosRank)+" toughest":"")+"</div></div>";}
 
 /* ---------- league ranks ---------- */
@@ -1663,9 +1677,9 @@ function pitTable(d){var st=staff(d),D=d.def;if(!D||!st.length)return "";
     +'</table></div><div class="note" style="margin-top:8px">Sorted by innings. Innings, hits, walks and strikeouts are counted from play-by-play. Splits by batter side use only hitters whose side is on their own roster ('+D.bhPct+"% of plate appearances against this team); the number in brackets is plate appearances. Steals are charged to the pitcher on the mound.</div></div>";}
 var US_KEY="d3s_us",USFAIL={};
 function usGet(){if(ACCT.on)return ACCT.team&&teamFolder(ACCT.team)?ACCT.team:"";try{var f=localStorage.getItem(US_KEY)||"";return f&&teamFolder(f)?f:"";}catch(e){return"";}}
-function usSave(f){if(!ACCT.on){usSet(f);render();return;}
+function usSave(f){if(!ACCT.on){usSet(f);myTeamBtn();render();return;}
   fetch("/api/me/team",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({team:f||""})}).then(function(r){if(!r.ok)throw 0;
-    ACCT.team=f||"";try{localStorage.setItem("d3s_acct_team",ACCT.team);}catch(e){}whoAmI();render();}).catch(function(){var n=$("usNote");if(n)n.innerHTML='<b style="color:var(--bad)">Could not save the team. Check the connection and try again.</b>';});}
+    ACCT.team=f||"";try{localStorage.setItem("d3s_acct_team",ACCT.team);}catch(e){}whoAmI();myTeamBtn();render();}).catch(function(){var n=$("usNote");if(n)n.innerHTML='<b style="color:var(--bad)">Could not save the team. Check the connection and try again.</b>';});}
 function usSet(f){try{if(f)localStorage.setItem(US_KEY,f);else localStorage.removeItem(US_KEY);}catch(e){}}
 function usNeedsLoad(){var f=usGet();if(!f||f===S.team)return false;var t=teamFolder(f),k=f+"_"+S.season;return !!(t&&t.s[S.season]&&!CACHE[k]&&!USFAIL[k]);}
 function matchBind(){var i=$("usIn"),c=$("usClr");if(i)i.onchange=function(){var t=teamByName(this.value);if(t)usSave(t.f);};if(c)c.onclick=function(){usSave("");};}
@@ -2052,6 +2066,65 @@ function vHuse(d){var H=huData(d),o=[];
     +'<div class="note" style="margin-top:8px">Substitutions come from the play-by-play lines such as "pinch hit for" and "to rf for". A change the scorer did not write down shows as a player appearing in the field without a start. Pitching changes are on the Pitchers tab. Roles: Everyday = started 80% or more of the games, Regular = half or more, Part-time starter = a quarter or more; below that a player is named for what he mostly does off the bench.</div></div>');
   return o.join("");}
 function huBind(){var a=$("huAll"),b=$("huPairs");if(a)a.onclick=function(e){e.preventDefault();S.huAll=!S.huAll;render();};if(b)b.onclick=function(e){e.preventDefault();S.huPairs=true;render();};}
+var CI_FAIL={};
+function ciYears(){return teamYears().slice(-4);}
+function ciNeedsLoad(){return ciYears().some(function(y){var k=S.team+"_"+y;return !CACHE[k]&&!CI_FAIL[k];});}
+function ciLoad(){var ys=ciYears().filter(function(y){var k=S.team+"_"+y;return !CACHE[k]&&!CI_FAIL[k];});
+  function step(){if(S.tab!=="coach")return;if(!ys.length){render();return;}var y=ys.shift();$("view").innerHTML=subNav()+'<div class="empty">Loading '+y+"…</div>";loadTeam(S.team,y,function(x){if(!x)CI_FAIL[S.team+"_"+y]=1;step();});}
+  renderTabs();step();}
+function ciRate(a){return a&&a[0]?a[1]/a[0]:null;}
+function ciSeason(d,L){var s=d.sum,g=s.g||1,b=line(s.bat&&s.bat[0])||{},lb=line(L.bat&&L.bat[0])||{},lg=L.g||1,M={};
+  function put(k,v,base){M[k]={v:v,b:base,x:(v!=null&&base)?v/base:null};}
+  put("rpg",s.rs/g,L.rs/lg);put("avg",b.avg,lb.avg);put("obp",b.obp,lb.obp);put("slg",b.slg,lb.slg);put("iso",b.slg-b.avg,lb.slg-lb.avg);put("hrg",b.hr/g,lb.hr/lg);put("k",b.k,lb.k);put("bb",b.bb,lb.bb);
+  put("sbg",s.att/g,L.att/lg);put("sbp",s.att?s.sb/s.att:null,L.att?L.sb/L.att:null);
+  var R2=(d.run||{}).r2||{},LR=L.r2||{},SC=(d.bunt||{}).sac||{},LS=L.sac||{};
+  ["all","outs:0","outs:1","outs:2","inn:1-3","inn:4-6","inn:7+","score:T3","score:T1","score:E","score:L1","score:L3"].forEach(function(k){put("r2|"+k,ciRate(R2[k]),ciRate(LR[k]));put("sac|"+k,ciRate(SC[k]),ciRate(LS[k]));});
+  [1,2,3,4,5,6,7,8,9].forEach(function(n){put("sac|slot:"+n,ciRate(SC["slot:"+n]),ciRate(LS["slot:"+n]));});
+  put("r3",ciRate(s.r3||(d.run||{}).r3&&d.run.r3.all),ciRate(LR&&L.r3&&L.r3.all));put("bg",s.bunts/g,L.bunts/lg);put("sqz",ciRate(s.sqz),ciRate(L.sqz));put("sqzn",s.sqz?s.sqz[1]:null,null);
+  var ev=(d.bench||{}).ev||[],c={ph:0,pr:0,d:0},early=0;ev.forEach(function(e){c[e[3]]++;if(e[1]<=6)early++;});put("phg",c.ph/g,null);put("prg",c.pr/g,null);put("dfg",c.d/g,null);put("subE",ev.length?early/ev.length:null,null);
+  var so=0,sn=0,short=0,long=0,rel=0,ro=0,arms=0,tot=0,inh=0;d.players.forEach(function(p){if(!p.p)return;if(p.p.o>=30)arms++;(p.p.ou||[]).forEach(function(u){tot+=u[9];if(u[8]===1){so+=u[9];sn++;if(u[9]<12)short++;if(u[9]>=18)long++;}else{rel++;ro+=u[9];if(u[6]>0)inh++;}});});
+  put("ips",sn?so/sn/3:null,null);put("short",sn?short/sn:null,null);put("long",sn?long/sn:null,null);put("relg",rel/g,null);put("pen",tot?ro/tot:null,null);put("arms",arms,null);put("inh",rel?inh/rel:null,null);
+  var ev9=0,hasGl=false;d.players.forEach(function(p){if(p.gl){hasGl=true;var gs=0;p.gl.forEach(function(r){gs+=r[2];});if(gs/g>=.8)ev9++;}});put("every",hasGl?ev9:null,null);
+  M.rec=s.w+"-"+s.l+(s.t?"-"+s.t:"");M.rank=s.rt?s.rt.rank:null;M.of=s.rt?s.rt.of:null;
+  var tags=[];if(M.iso.x>=1.2||M.hrg.x>=1.35)tags.push(["Power",Math.max(M.iso.x,M.hrg.x/1.12)]);if(M.sbg.x>=1.25)tags.push(["Running",M.sbg.x]);if(M["sac|all"].x>=1.3)tags.push(["Bunting",M["sac|all"].x]);if(M.bb.x>=1.12)tags.push(["Walks",M.bb.x+.1]);if(M.k.x!=null&&M.k.x<=.85)tags.push(["Contact",1/M.k.x]);
+  tags.sort(function(a,z){return z[1]-a[1];});M.type=tags.length?tags.slice(0,2).map(function(t){return t[0];}).join(" and "):"Balanced";M.tags=tags.map(function(t){return t[0];});
+  return M;}
+function ciFmt(k,v){if(v==null||isNaN(v))return "–";return /^(avg|obp|slg|iso)$/.test(k)?f3(v):/^(sqz|r3)$|^r2\||^sac\|/.test(k)?pct(v,1,1):/^(k|bb|sbp|short|long|pen|subE|inh)$/.test(k)?pct(v,1,0):/^(arms|every|sqzn)$/.test(k)?String(v):k==="ips"?v.toFixed(1):v.toFixed(2);}
+function vCoach(d){var ys=ciYears(),Y=[],o=[];ys.forEach(function(y){var dd=CACHE[S.team+"_"+y],L=IDX.league[y];if(dd&&L)Y.push({y:y,d:dd,M:ciSeason(dd,L)});});
+  if(!Y.length)return '<div class="empty"><h2>No seasons to read</h2></div>';
+  var n=Y.length,last=Y[n-1],span=Y[0].y+(n>1?" to "+last.y:"");
+  function xs(k){return Y.map(function(r){return r.M[k].x;}).filter(function(v){return v!=null&&isFinite(v);});}
+  function vs(k){return Y.map(function(r){return r.M[k].v;}).filter(function(v){return v!=null&&isFinite(v);});}
+  function rng(a,f){return f(Math.min.apply(null,a))+" to "+f(Math.max.apply(null,a));}
+  var tx=function(v){return v.toFixed(1)+"×";};
+  /* what stays and what moves */
+  var always=[],moves=[],T=[["sbg","run","steal tries a game"],["r2|outs:2","run with two outs","of two-out chances to steal second"],["r2|inn:7+","run late","of chances from the 7th on"],["r2|score:T1","run when trailing by one or two","of those chances"],["sac|all","sacrifice bunt","of sacrifice spots"],["sac|inn:1-3","bunt early in games","of sacrifice spots in innings 1 to 3"],["sqz","squeeze","of squeeze spots"],["iso","hit for power","isolated power"],["bb","walk","walk rate"],["k","strike out","strikeout rate"]];
+  T.forEach(function(t){var a=xs(t[0]);if(a.length<Math.min(n,3))return;var mn=Math.min.apply(null,a),mx=Math.max.apply(null,a),val=rng(vs(t[0]),function(v){return ciFmt(t[0],v);});
+    if(mn>=1.2)always.push("<b>They "+t[1]+" more than a typical D3 team, every year.</b> "+tx(mn)+" to "+tx(mx)+" the D3 rate ("+val+" "+t[2]+").");
+    else if(mx<=.8)always.push("<b>They "+t[1]+" less than a typical D3 team, every year.</b> "+tx(mn)+" to "+tx(mx)+" the D3 rate ("+val+" "+t[2]+").");
+    else if(mx/Math.max(mn,.05)>=1.7&&(mx>=1.2||mn<=.8)){var hi=Y.filter(function(r){return r.M[t[0]].x===mx;})[0],lo=Y.filter(function(r){return r.M[t[0]].x===mn;})[0];
+      moves.push("<b>How much they "+t[1]+" changes.</b> "+tx(mx)+" the D3 rate in "+hi.y+", "+tx(mn)+" in "+lo.y+". That points to the roster, not a rule.");}});
+  var S2=[["ips","Starters go","innings a start",function(v){return v.toFixed(1);}],["relg","They use","relievers a game",function(v){return v.toFixed(1);}],["phg","They pinch hit","times a game",function(v){return v.toFixed(1);}],["prg","They pinch run","times a game",function(v){return v.toFixed(1);}],["dfg","They make","defensive changes a game",function(v){return v.toFixed(1);}]];
+  S2.forEach(function(t){var a=vs(t[0]);if(a.length<Math.min(n,3))return;var mn=Math.min.apply(null,a),mx=Math.max.apply(null,a),mean=a.reduce(function(p,q){return p+q;},0)/a.length;if(mean<.15)return;
+    if((mx-mn)/mean<=.25)always.push("<b>"+t[1]+" about "+t[3](mean)+" "+t[2]+", every year.</b> Range "+rng(a,t[3])+".");
+    else if((mx-mn)/mean>=.6)moves.push("<b>"+t[1]+" anywhere from "+t[3](mn)+" to "+t[3](mx)+" "+t[2]+", depending on the year.</b> Not a fixed habit.");});
+  var types=Y.map(function(r){return r.M.type;}),cnt={};Y.forEach(function(r){r.M.tags.forEach(function(t){cnt[t]=(cnt[t]||0)+1;});});
+  var core=Object.keys(cnt).filter(function(k){return cnt[k]>=Math.max(2,n-1);}),hd=core.length?"A "+core.join(" and ").toLowerCase()+" offense, year after year":(types.every(function(t){return t===types[0];})?types[0]+" offense every year":"The offense has taken a different shape each year");
+  o.push('<div class="card"><h3>What kind of offense, '+span+'</h3><div class="ttr">'+hd+'.</div><div class="cichips">'+Y.map(function(r){return '<div class="cichip"><b>'+r.y+" · "+r.M.rec+(r.M.rank?" · "+ord(r.M.rank)+" of "+r.M.of:"")+"</b><span>"+r.M.type+"</span><div class=\"note\">"+r.M.rpg.v.toFixed(1)+" runs a game (D3 "+r.M.rpg.b.toFixed(1)+")</div></div>";}).join("")+"</div>"
+    +'<div class="note" style="margin-top:8px">Each season is labelled by what the offense did clearly more than a typical D3 team that year: power (extra bases and home runs), running (steal tries), bunting (sacrifices), walks, or contact (few strikeouts). Balanced means nothing stood out.</div></div>');
+  o.push('<div class="grid g2"><div class="card"><h3>What stays the same: likely the coach</h3>'+(always.length?'<ul class="bl">'+always.map(function(x){return "<li>"+x+"</li>";}).join("")+"</ul>":'<div class="note">Nothing is clearly above or below D3 in every season.</div>')+'</div><div class="card"><h3>What changes: likely the roster</h3>'+(moves.length?'<ul class="bl">'+moves.map(function(x){return "<li>"+x+"</li>";}).join("")+"</ul>":'<div class="note">No habit has swung widely from one season to the next.</div>')+"</div></div>");
+  function tbl(title,rows,note){var h='<div class="card"><h3>'+title+'</h3><div style="overflow:auto"><table class="mx ci"><tr><th></th>'+Y.map(function(r){return "<th>"+r.y+"</th>";}).join("")+"<th>D3 "+last.y+"</th></tr>";
+    rows.forEach(function(r){if(typeof r==="string"){h+='<tr class="grp"><td colspan="'+(n+2)+'">'+r+"</td></tr>";return;}
+      var any=Y.some(function(q){return q.M[r[0]]&&q.M[r[0]].v!=null;});if(!any)return;
+      h+="<tr><td>"+r[1]+"</td>"+Y.map(function(q){var m=q.M[r[0]],c=m.x==null?"":(m.x>=1.2?"up":m.x<=.8?"dn":"");return '<td class="'+c+'"'+(m.x!=null?' title="'+m.x.toFixed(2)+" times the D3 rate that year\"":"")+">"+ciFmt(r[0],m.v)+"</td>";}).join("")+'<td class="d3">'+(last.M[r[0]].b!=null?ciFmt(r[0],last.M[r[0]].b):"–")+"</td></tr>";});
+    return h+"</table></div>"+(note?'<div class="note" style="margin-top:8px">'+note+"</div>":"")+"</div>";}
+  var key='Blue = at least 20% above the D3 rate that season. Tan = at least 20% below. Hover a number for the exact multiple.';
+  o.push(tbl("The offense by season",["Scoring",["rpg","Runs a game"],["avg","Batting average"],["obp","On-base"],["slg","Slugging"],["iso","Isolated power (slugging minus average)"],["hrg","Home runs a game"],"Plate approach",["bb","Walk rate"],["k","Strikeout rate"],"Pressure",["sbg","Steal tries a game"],["sbp","Steals safe"],["bg","Bunts a game"]],key));
+  o.push(tbl("When they run: tries to steal second, as a share of chances",["Overall",["r2|all","All chances"],["r3","Tries for third"],"By outs",["r2|outs:0","No outs"],["r2|outs:1","One out"],["r2|outs:2","Two outs"],"By inning",["r2|inn:1-3","Innings 1 to 3"],["r2|inn:4-6","Innings 4 to 6"],["r2|inn:7+","7th on"],"By score",["r2|score:T3","Trailing by 3 or more"],["r2|score:T1","Trailing by 1 or 2"],["r2|score:E","Tied"],["r2|score:L1","Leading by 1 or 2"],["r2|score:L3","Leading by 3 or more"]],"A chance is a runner on first with second base open. "+key));
+  o.push(tbl("When they bunt: sacrifice tries, as a share of sacrifice spots",["Overall",["sac|all","All spots"],["sqz","Squeeze tries"],["sqzn","Squeeze tries (count)"],"By inning",["sac|inn:1-3","Innings 1 to 3"],["sac|inn:4-6","Innings 4 to 6"],["sac|inn:7+","7th on"],"By score",["sac|score:T1","Trailing by 1 or 2"],["sac|score:E","Tied"],["sac|score:L1","Leading by 1 or 2"],"By lineup spot",["sac|slot:1","Leadoff"],["sac|slot:2","2nd"],["sac|slot:3","3rd"],["sac|slot:4","4th"],["sac|slot:5","5th"],["sac|slot:6","6th"],["sac|slot:7","7th"],["sac|slot:8","8th"],["sac|slot:9","9th"]],"A sacrifice spot is a runner on first or second with fewer than two outs. "+key));
+  o.push(tbl("Running the game: bench and pitching",["Lineup and bench",["every","Players starting 80% or more of the games"],["phg","Pinch hitters a game"],["prg","Pinch runners a game"],["dfg","Defensive changes a game"],["subE","Substitutions made by the 6th inning"],"Pitching",["ips","Innings per start"],["short","Starts ended before the 5th"],["long","Starts of 6 innings or more"],["relg","Relievers a game"],["pen","Share of innings from the bullpen"],["inh","Relievers brought in with runners on"],["arms","Pitchers with 10 or more innings"]],"There is no D3 average for these, so read them across the seasons. Substitutions come from the play-by-play text and miss changes the scorer did not write down."));
+  o.push('<div class="note" style="margin:4px 2px 12px">This reads '+n+" season"+(n>1?"s":"")+" as one coaching staff. The data does not say who the head coach was, so if the coach changed in this span, read the seasons before and after the change separately.</div>");
+  return o.join("");}
 function vMatch(d){var f=usGet(),o=[usPicker()],t=f?teamFolder(f):null;
   if(!t){o.push('<div class="empty"><h2>'+(ACCT.on&&!ACCT.admin?"No team on this account":"Set our team")+"</h2><p>"+(ACCT.on&&!ACCT.admin?"Once a team is tied to your sign-in, this page shows how we match up with ":"Type your school above. This page then shows how we match up with ")+esc(d.name)+".</p></div>");return o.join("");}
   if(f===d.folder){o.push('<div class="empty"><h2>This is our team</h2><p>Open an opponent to see the matchup.</p></div>');return o.join("");}
