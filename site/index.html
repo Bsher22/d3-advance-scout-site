@@ -24,6 +24,16 @@ nav[data-sec] button.on{color:var(--sc);border-bottom-color:var(--sc)}
 .grid.g2>.card.wide{grid-column:1/-1}
 .card.wide ul.ins,.card.wide ul.kt{columns:2 340px;column-gap:34px}.card.wide ul.ins li,.card.wide ul.kt li{break-inside:avoid}.card.wide ul.ins li:last-child{border-bottom:1px solid #eef1f3}
 #view .card:not(.pr .card)>h3{font-size:17px;letter-spacing:.4px;margin-bottom:12px}#view .card.fold:not(.pr .card)>h3{min-height:34px}#view .card[data-sec]:not(.pr .card)>h3:before{width:11px;height:11px}
+table.ug td.hc{width:31px;min-width:31px;height:32px;text-align:center;font-size:10.5px;font-weight:700;line-height:1.15;border-left:1px solid #f1f3f5}
+table.ug td.hc i{display:block;font-style:normal;font-weight:500;font-size:9.5px;opacity:.85}
+.hc.st{background:var(--navy);color:#fff}.hc.dh{background:#5d6b78;color:#fff}.hc.ph{background:#f3c98b;color:#3b2a08}.hc.pr{background:#bfe3dd;color:#0b4f49}.hc.df{background:#e3e8ec;color:#44515d}
+.hc.off{box-shadow:inset 0 -4px 0 var(--bad)}
+.hkey{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--mut)}.hkey span{display:inline-flex;align-items:center;gap:6px}.hkey b{display:inline-block;width:22px;height:16px;border-radius:2px}
+.gds2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(430px,100%),1fr));gap:22px 32px}.gds2 h4{margin:0 0 10px;font-size:16px}.gds2 .gdset{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.cfpos{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin:2px 0 4px}
+.cfp{font:inherit;text-align:left;border:1px solid var(--line);border-radius:8px;background:#fff;padding:9px 11px;cursor:pointer;color:var(--ink);min-height:74px}.cfp b{display:block;font-size:17px}.cfp .v{font-size:15px;font-weight:700}.cfp span{display:block;font-size:12.5px;color:var(--mut)}
+.cfp.sel{border-color:var(--navy);box-shadow:0 0 0 2px var(--navy)}.cfp.hi{background:#ecf6ef}.cfp.lo{background:#fbeeea}.cfp:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+table.mx tr.cav td{background:#f1f3f5;font-style:italic;border-top:2px solid var(--mut);border-bottom:2px solid var(--mut)}table.mx tr.me td{background:#eef4fa;font-weight:600}table.mx tr.us td{background:#ecf6ef}
 .tmbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 14px}.tmbar input{font:inherit;font-size:15px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;min-width:min(260px,100%);min-height:40px}
 .tmbar .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}.tmbar .seg button{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border:0;background:none;cursor:pointer;min-height:40px;color:var(--ink)}.tmbar .seg button.on{background:var(--navy);color:#fff}
 .tmgrp{margin:0 0 16px}.tmgrp h3{margin:0 0 8px;font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut)}.tmgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(165px,100%),1fr));gap:8px}
@@ -414,9 +424,9 @@ window.__SC={index:function(d){IDX=d;},load:function(k,d){CACHE[k]=d;if(PENDING[
 var S={player:"",pscope:"",back:"roster",team:null,season:null,tab:"brief",hand:0,res:"all",type:"all",norm:"ring",minPA:20,kt:"all"};
 var TABS=[["game","Gameday"],["brief","1 · Briefing"],["card","2 · Scorecard"],["key","3 · By phase"],["roster","Players"],["hitters","Spray charts"],["run","Running game"],["bunt","Bunting"],["pit","Pitching & defense"],["use","Pitcher usage"],["overview","Team data"],["print","Full report"]];
 /* The top bar has six tabs. Views that belong together share one tab and are switched with the small row under it. */
-var NAV=[["game","Gameday",["game"]],["brief","Report",["brief"]],["match","Matchup",["match","depth"]],["roster","Hitters",["roster","posn","hitters","bench"]],["pit","Pitchers",["pit","use"]],
+var NAV=[["game","Gameday",["game"]],["brief","Report",["brief"]],["match","Matchup",["match","depth"]],["roster","Hitters",["roster","huse","posn","hitters","bench","conf"]],["pit","Pitchers",["pit","use"]],
          ["run","Running & bunting",["run","bunt"]],["card","More",["card","key","overview","print"]]];
-var SUBL={match:"Us against them",depth:"Our depth chart",roster:"Players",posn:"Positioning card",bench:"Off the bench",hitters:"Spray charts",pit:"Staff & defense",use:"Who pitches when",run:"Running game",bunt:"Bunting",card:"Scorecard",key:"By phase",overview:"Team data",print:"Full report"};
+var SUBL={huse:"Who plays when",conf:"Conference by position",match:"Us against them",depth:"Our depth chart",roster:"Players",posn:"Positioning card",bench:"Off the bench",hitters:"Spray charts",pit:"Staff & defense",use:"Who pitches when",run:"Running game",bunt:"Bunting",card:"Scorecard",key:"By phase",overview:"Team data",print:"Full report"};
 function navGroup(t){t=t==="player"?"roster":t;for(var i=0;i<NAV.length;i++)if(NAV[i][2].indexOf(t)>=0)return NAV[i];return NAV[1];}
 function subNav(){var g=navGroup(S.tab),cur=S.tab==="player"?"roster":S.tab,fold=FOLD[S.tab];
   if(g[2].length<2&&!fold)return"";
@@ -466,9 +476,10 @@ function whoAmI(){if(location.protocol.indexOf("http")!==0||!window.fetch)return
     var was=ACCT.team,wasA=ACCT.admin;ACCT.team=u.team||"";ACCT.admin=u.role==="admin";ACCT.known=true;try{localStorage.setItem("d3s_acct_team",ACCT.team);localStorage.setItem("d3s_acct_admin",ACCT.admin?"1":"");}catch(e){}
     var tm=ACCT.team&&IDX?teamFolder(ACCT.team):null;if((was!==ACCT.team||wasA!==ACCT.admin)&&(S.tab==="match"||S.tab==="depth")&&S.team)render();
     var el=$("built");if(el)el.innerHTML=esc(u.name)+(tm?" · "+esc(tm.n):"")+' · <a href="/account" style="color:inherit">Password</a> · <a href="/logout" style="color:inherit">Sign out</a>';}).catch(function(){});}
-var SEC_TAB={pit:"pit",use:"pit",run:"run",bunt:"run",hitters:"hit",roster:"hit",bench:"hit",posn:"def",depth:"us",match:"us",player:"hit",game:"hit"};
+var SEC_TAB={huse:"hit",conf:"hit",pit:"pit",use:"pit",run:"run",bunt:"run",hitters:"hit",roster:"hit",bench:"hit",posn:"def",depth:"us",match:"us",player:"hit",game:"hit"};
 function secOf(txt,tab){var t=txt.toLowerCase();
   if(tab==="depth")return "us";
+  if(tab==="conf"||tab==="huse")return "hit";
   if(/strength and schedule|results by opponent|built on|short version|three keys|beat you|beat them|graded areas|numbers hold up/.test(t))return "gen";
   if(/how we should do|game plan|suggested lineup|head to head|common opponents|side by side|our best nine/.test(t))return "us";
   if(/run production|how they score/.test(t))return "hit";
@@ -539,9 +550,10 @@ function LG(){return IDX.league[S.season]||{};}
 function renderTabs(){var cur=navGroup(S.tab)[0];[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===cur?"on":"";});}
 function render(){renderTabs();if(S.tab==="teams"){showTeams();return;}var d=D();if(!d)return;
   if(S.tab==="player"){if(!careerReady()){$("view").innerHTML='<div class="empty">Loading every season…</div>';loadCareer(render);return;}$("view").innerHTML=subNav()+'<div class="plv">'+vPlayer(d)+"</div>";colorCards();bind();return;}
+  if(S.tab==="conf"&&cfNeedsLoad()){cfLoad();return;}
   if((S.tab==="match"||S.tab==="depth")&&grdNeedsLoad()){$("view").innerHTML='<div class="empty">Loading…</div>';grdLoad(render);return;}
-  if((S.tab==="match"||S.tab==="depth")&&usNeedsLoad()){$("view").innerHTML='<div class="empty">Loading our team…</div>';var uk=usGet()+"_"+S.season;loadTeam(usGet(),S.season,function(x){if(!x)USFAIL[uk]=1;render();});return;}
-  var v={brief:vBrief,card:vCard,print:vPrint,key:vKey,overview:vOverview,hitters:vHitters,run:vRun,bunt:vBunt,pit:vPit,use:vUse,roster:vRoster,game:vGame,posn:vPosn,bench:vBench,match:vMatch,depth:vDepth}[S.tab]||vBrief;$("view").innerHTML=subNav()+(S.tab==="print"||S.tab==="game"||S.tab==="depth"?"":head(d))+v(d);foldCards();evenCols();colorCards();bind();if(S.tab==="match"||S.tab==="depth"){matchBind();grdBind();}}
+  if((S.tab==="match"||S.tab==="depth"||S.tab==="game")&&usNeedsLoad()){$("view").innerHTML='<div class="empty">Loading our team…</div>';var uk=usGet()+"_"+S.season;loadTeam(usGet(),S.season,function(x){if(!x)USFAIL[uk]=1;render();});return;}
+  var v={brief:vBrief,card:vCard,print:vPrint,key:vKey,overview:vOverview,hitters:vHitters,run:vRun,bunt:vBunt,pit:vPit,use:vUse,roster:vRoster,game:vGame,posn:vPosn,bench:vBench,match:vMatch,depth:vDepth,conf:vConf,huse:vHuse}[S.tab]||vBrief;$("view").innerHTML=subNav()+(S.tab==="print"||S.tab==="game"||S.tab==="depth"?"":head(d))+v(d);foldCards();evenCols();colorCards();bind();if(S.tab==="match"||S.tab==="depth"){matchBind();grdBind();}if(S.tab==="conf")cfBind();if(S.tab==="huse")huBind();}
 function head(d){var s=d.sum;return '<div style="margin-bottom:14px"><h2>'+esc(d.name)+' <span class="sub">'+esc(d.conf||"")+" · "+d.season+'</span></h2><div class="sub">'+s.w+"-"+s.l+(s.t?"-"+s.t:"")+" in "+s.g+" games with play-by-play · "+(s.rs/s.g).toFixed(1)+" runs scored / "+(s.ra/s.g).toFixed(1)+" allowed per game"+(s.rt?" · rated "+ord(s.rt.rank)+" of "+s.rt.of+" in D3 · schedule "+ord(s.rt.sosRank)+" toughest":"")+"</div></div>";}
 
 /* ---------- league ranks ---------- */
@@ -748,8 +760,13 @@ function gdLikely(d){
   return lu;}
 function gdNew(d){var cs=catchers(d),st=staff(d).filter(function(x){return x.q.gs>0;}).sort(function(a,b){return b.q.gs-a.q.gs;});
   return{lineup:gdLikely(d),at:0,mode:"field",first:"field",inn:1,outs:0,on:[null,null,null],us:0,them:0,pit:st.length?st[0].i:null,cat:cs.length?d.players.indexOf(cs[0].p):null,used:[],hand:0,setup:true};}
-function gdState(d){var k=gdKey();if(GD&&GD.k===k)return GD;var g=null;try{g=JSON.parse(localStorage.getItem(k)||"null");}catch(e){}
-  if(!g||!g.lineup||g.lineup.length!==9)g=gdNew(d);g.k=k;GD=g;return g;}
+function gdUs(){var f=usGet();if(!f||f===S.team)return null;return CACHE[f+"_"+S.season]||null;}
+function gdOurs(G){var U=gdUs();if(!U)return null;if(G.usf!==U.folder||!G.ulu||G.ulu.length!==9){G.usf=U.folder;G.ulu=gdLikely(U);G.uat=0;
+    var st=[];U.players.forEach(function(p,i){if(p.p&&p.p.o>0)st.push({i:i,p:p});});st.sort(function(a,b){return (b.p.p.gs||0)-(a.p.p.gs||0)||b.p.p.o-a.p.p.o;});
+    G.upit=st.length?st[0].i:null;if(G.upit!=null){var t=U.players[G.upit].t;G.hand=t==="L"?1:t==="R"?2:0;}}
+  if(G.uat==null)G.uat=0;return U;}
+function gdState(d){var k=gdKey();if(GD&&GD.k===k){gdOurs(GD);return GD;}var g=null;try{g=JSON.parse(localStorage.getItem(k)||"null");}catch(e){}
+  if(!g||!g.lineup||g.lineup.length!==9)g=gdNew(d);g.k=k;GD=g;gdOurs(g);return g;}
 /* Gameday: what the hitter did. Each outcome is recorded against him for today, and the outs, bases and score move
    the usual way (a single moves everyone up one base, a double two, a walk only forces); fix the bases by hand if not. */
 var GD_OC=[["Out",[["K","Strikeout"],["GO","Ground out"],["FO","Fly out"],["DP","Double play"],["SAC","Sac bunt"],["FC","Fielder's choice"]]],
@@ -805,7 +822,11 @@ function gdAct(a,v,val){var d=D(),G=gdState(d),n;
   else if(a==="next"){G.at=(G.at+1)%9;}
   else if(a==="prev"){G.at=(G.at+8)%9;}
   else if(a==="at"){G.at=+v;}
-  else if(a==="out"){G.outs++;if(G.mode==="field")G.at=(G.at+1)%9;if(G.outs>=3)gdFlip(G);}
+  else if(a==="out"){G.outs++;if(G.mode==="field")G.at=(G.at+1)%9;else if(G.ulu)G.uat=((G.uat||0)+1)%9;if(G.outs>=3)gdFlip(G);}
+  else if(a==="unext"){G.uat=((G.uat||0)+1)%9;}
+  else if(a==="uprev"){G.uat=((G.uat||0)+8)%9;}
+  else if(a==="ulu"){if(G.ulu)G.ulu[+v]=val===""?null:+val;}
+  else if(a==="upit"){G.upit=val===""?null:+val;var U0=gdUs();if(U0&&G.upit!=null){var t0=U0.players[G.upit].t;G.hand=t0==="L"?1:t0==="R"?2:0;}}
   else if(a==="reach"){G.on[0]=G.lineup[G.at];G.at=(G.at+1)%9;}
   else if(a==="flip"){gdFlip(G);}
   else if(a==="save"){gdExport(d,G);return;}
@@ -818,11 +839,11 @@ function gdAct(a,v,val){var d=D(),G=gdState(d),n;
   else if(a==="pit"){n=val!=null?+val:+v;if(G.pit!=null&&G.pit!==n&&G.used.indexOf(G.pit)<0)G.used.push(G.pit);G.pit=n;var u=G.used.indexOf(n);if(u>=0)G.used.splice(u,1);}
   else if(a==="cat"){G.cat=val===""?null:+val;}
   else if(a==="lu"){G.lineup[+v]=val===""?null:+val;}
-  else if(a==="likely"){G.lineup=gdLikely(d);}
+  else if(a==="likely"){G.lineup=gdLikely(d);var U1=gdUs();if(U1)G.ulu=gdLikely(U1);}
   else if(a==="first"){G.first=v;if(G.inn===1&&G.outs===0)G.mode=v;}
   else if(a==="setup"){G.setup=!G.setup;}
   else if(a==="more"){G.more=!G.more;}
-  else if(a==="start"){G.setup=false;}
+  else if(a==="start"){G.setup=false;if(!G.started&&G.inn===1&&G.outs===0)G.mode=G.first;G.started=true;}
   else if(a==="reset"){if(v==="yes"){GD=gdNew(d);GD.k=gdKey();}else{G.confirm=!G.confirm;gdSave();render();return;}}
   if(GD)GD.confirm=false;
   gdSave();render();}
@@ -1107,16 +1128,35 @@ function gdPitcher(d,G){
         :'<div class="note">'+(U.rows.length?"No reliever clearly fits this inning and score. The full list is below.":"Outing-by-outing data is not built for this team yet.")+"</div>")
       +(G.used.length?'<div class="note" style="margin-top:8px">Already used today: '+G.used.map(function(i){return esc(gdName(d,i));}).join(", ")+".</div>":"")+"</div>";
   return '<div class="cs"><div class="csm">'+main+'</div><div class="css">'+side+"</div></div>"+gdBullpen(d,G,sit);}
-function gdSetup(d,G){var hs=[];d.players.forEach(function(p,i){if(p.s&&p.s[0][0]>0)hs.push({i:i,p:p});});hs.sort(function(a,b){return b.p.s[0][0]-a.p.s[0][0];});
-  var o=['<div class="card"><h3>Before the game: their lineup</h3><div class="note" style="margin-bottom:10px">Filled in with the spot each hitter bats in most often. Change any spot when the lineup card comes over.</div><div class="gdset">'];
-  for(var k=0;k<9;k++)o.push("<label><span>"+(k+1)+'</span><select class="gdsel" data-gdsel="lu:'+k+'">'+gdOpt(hs,G.lineup[k],"—")+"</select></label>");
-  o.push("</div>"+gdPickPit(d,G)+'<div class="gdacts"><span class="gl" style="align-self:center;font-size:11px;color:var(--mut);font-weight:700">FIRST UP</span><button class="gb'+(G.first==="field"?" on":"")+'" data-gd="first:field">They bat first</button><button class="gb'+(G.first==="bat"?" on":"")+'" data-gd="first:bat">We bat first</button><span style="flex:1"></span><button class="gb" data-gd="likely:1">Reset to usual lineup</button><button class="gb go" data-gd="start:1">Start</button></div></div>');
-  return o.join("");}
+function gdSetup(d,G){var U=gdOurs(G),hs=[],us=[],ups=[];d.players.forEach(function(p,i){if(p.s&&p.s[0][0]>0)hs.push({i:i,p:p});});hs.sort(function(a,b){return b.p.s[0][0]-a.p.s[0][0];});
+  var theirs='<div><h4>Their lineup: '+esc(d.name)+'</h4><div class="gdset">';
+  for(var k=0;k<9;k++)theirs+="<label><span>"+(k+1)+'</span><select class="gdsel" data-gdsel="lu:'+k+'" aria-label="Their batter '+(k+1)+'">'+gdOpt(hs,G.lineup[k],"—")+"</select></label>";
+  theirs+="</div>"+gdPickPit(d,G)+"</div>";
+  var ours;
+  if(U){U.players.forEach(function(p,i){if(p.s&&p.s[0][0]>0)us.push({i:i,p:p});if(p.p&&p.p.o>0)ups.push({i:i,p:p});});us.sort(function(a,b){return b.p.s[0][0]-a.p.s[0][0];});ups.sort(function(a,b){return b.p.p.o-a.p.p.o;});
+    ours='<div><h4>Our lineup: '+esc(U.name)+'</h4><div class="gdset">';
+    for(k=0;k<9;k++)ours+="<label><span>"+(k+1)+'</span><select class="gdsel" data-gdsel="ulu:'+k+'" aria-label="Our batter '+(k+1)+'">'+gdOpt(us,G.ulu[k],"—")+"</select></label>";
+    ours+='</div><div class="gdacts"><label><span class="gl" style="font-size:11px;color:var(--mut);font-weight:700">OUR PITCHER </span><select class="gdsel" data-gdsel="upit:x">'+gdOpt(ups,G.upit,"Choose…")+"</select></label></div></div>";}
+  else{var f=usGet();ours='<div><h4>Our lineup</h4><div class="note">'+(f&&f===S.team?"This is our own team, so there is no second lineup to set.":f?"Our team has no "+S.season+" data, so only their lineup can be set.":"No team is tied to this sign-in yet. Set our team on the Matchup tab to add our lineup here.")+"</div></div>";}
+  return '<div class="card"><h3>Game setup</h3><div class="note" style="margin-bottom:12px">Both lineups are filled in with the spot each hitter bats in most often. Change any spot when the lineup cards are exchanged, then start the game.</div><div class="gds2">'+theirs+ours+"</div>"
+    +'<div class="gdacts" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px"><span class="gl" style="align-self:center;font-size:11px;color:var(--mut);font-weight:700">FIRST UP</span><button class="gb'+(G.first==="field"?" on":"")+'" data-gd="first:field">They bat first</button><button class="gb'+(G.first==="bat"?" on":"")+'" data-gd="first:bat">We bat first</button><span style="flex:1"></span><button class="gb" data-gd="likely:1">Reset to usual lineups</button><button class="gb go big" data-gd="start:1">'+(G.started?"Back to the game":"Start game")+"</button></div></div>";}
+function gdOurBat(d,G,U){var bi=G.ulu[G.uat],p=bi!=null?U.players[bi]:null;if(!p)return "";
+  var tp=G.pit!=null?d.players[G.pit]:null,h=tp&&tp.t==="L"?"L":tp&&tp.t==="R"?"R":null,A=line(p.s[0]),sp=h?line(p.s[h==="L"?1:2]):null,v=h?mxReg(sp,opsOf(A),40):opsOf(A),calls=[];
+  if(h){var df=v-opsOf(A),hd=df>=.08?"Good matchup for him":df<=-.08?"Tough matchup for him":"No platoon edge either way";
+    var q=tp.p,side=p.b==="L"?1:p.b==="R"?2:(h==="L"?2:1),pl=q&&q.s?line(q.s[side]):null;
+    calls.push(gdCall("Matchup",df>=.08?"w":df<=-.08?"t":"i",hd,esc(p.n)+" has a "+f3(v)+" OPS against "+(h==="L"?"left":"right")+"-handers"+(sp&&sp.pa?" ("+sp.pa+" PA)":"")+", "+f3(opsOf(A))+" overall."+(pl&&pl.pa>=20?" "+esc(tp.n)+" allows "+f3(opsOf(pl))+" to "+(side===1?"left":"right")+"-handed hitters.":"")));
+    var inl={};G.ulu.forEach(function(x){if(x!=null)inl[x]=1;});var best=null;U.players.forEach(function(b2,i){if(inl[i]||!b2.s||b2.s[0][0]<15)return;var l2=line(b2.s[h==="L"?1:2]);if(!l2||l2.pa<15)return;var v2=mxReg(l2,opsOf(line(b2.s[0])),40);if(v2>=v+.12&&(!best||v2>best.v))best={p:b2,v:v2,pa:l2.pa};});
+    if(best&&G.inn>=6)calls.push(gdCall("Bench","w","Pinch-hit option: "+esc(best.p.n),f3(best.v)+" OPS against "+(h==="L"?"left":"right")+"-handers ("+best.pa+" PA), against "+f3(v)+" for "+esc(p.n)+"."));}
+  var rn=((U.run||{}).runners||{})[bi],nx=[1,2].map(function(k){var j=G.ulu[(G.uat+k)%9];return j!=null?esc(U.players[j].n):"–";});
+  return '<div class="card"><div class="gdh">'+(p.num?'<div class="pnum">'+esc(p.num)+"</div>":"")+'<div style="flex:1 1 260px"><h2>'+esc(p.n)+'</h2><div class="sub">'+["Batting for us, "+ord(G.uat+1)+" in the order",p.b?"bats "+({R:"right",L:"left",S:"both"}[p.b]||p.b):"",f3(A.avg)+" / "+f3(A.obp)+" / "+f3(A.slg),A.hr+" HR",rn&&rn[1]?rn[2]+" of "+rn[1]+" stealing":""].filter(Boolean).join(" · ")+"</div></div>"
+    +'<div class="gdacts" style="margin:0"><button class="gb" data-gd="uprev:1">‹ Back</button><button class="gb" data-gd="unext:1">Next batter ›</button></div></div>'
+    +(calls.length?'<div class="calls">'+calls.join("")+"</div>":"")+'<div class="note" style="margin-top:8px">On deck: '+nx[0]+" · in the hole: "+nx[1]+"</div></div>";}
 function gdOffline(){var web=location.protocol.indexOf("http")===0,ready=careerReady();
   if(!ready){setTimeout(function(){loadCareer(function(){if(S.tab==="game")render();});},0);return '<span class="offl">Saving this team for offline use…</span>';}
   return '<span class="offl"><b>✓ Loaded</b> – '+(web?"this team stays available if the signal drops. Keep this tab open.":"running from this computer; no internet needed.")+"</span>";}
 function vGame(d){
   var G=gdState(d),sit=gdSit(G),o=[];
+  if(G.setup)return '<div style="margin:2px 2px 10px">'+gdOffline()+' <span class="offl">· '+esc(d.name)+" "+d.season+" · "+d.sum.g+" games of play-by-play</span></div>"+gdSetup(d,G);
   o.push('<div class="gdbar"><div class="grp"><button class="gb'+(G.mode==="field"?" on":"")+'" data-gd="mode:field">They bat</button><button class="gb'+(G.mode==="bat"?" on":"")+'" data-gd="mode:bat">We bat</button></div>'
     +'<div class="grp"><span class="gl">Inning</span><button class="gb sm" data-gd="inn:-1">−</button><span class="gnum">'+G.inn+'</span><button class="gb sm" data-gd="inn:1">+</button></div>'
     +'<div class="grp"><span class="gl">Outs</span>'+[0,1,2].map(function(n){return '<button class="gb sm'+(G.outs===n?" on":"")+'" data-gd="outs:'+n+'">'+n+"</button>";}).join("")+"</div>"
@@ -1125,9 +1165,8 @@ function vGame(d){
     +'<div class="grp"><span class="gl">Them</span><button class="gb sm" data-gd="them:-1">−</button><span class="gnum">'+G.them+'</span><button class="gb sm" data-gd="them:1">+</button></div>'
     +'<span style="flex:1"></span><div class="grp"><button class="gb sm'+(G.setup?" on":"")+'" data-gd="setup:1">Lineup</button>'+(G.confirm?'<button class="gb sm out" data-gd="reset:yes">Yes, clear it</button><button class="gb sm" data-gd="reset:no">Keep</button>':'<button class="gb sm" data-gd="reset:ask">New game</button>')+"</div></div>");
   o.push('<div style="margin:-4px 2px 10px">'+gdOffline()+' <span class="offl">· '+esc(d.name)+" "+d.season+" · "+d.sum.g+" games of play-by-play</span></div>");
-  if(G.setup)o.push(gdSetup(d,G));
   if(G.mode==="field")o.push(gdBatter(d,G));
-  else o.push(gdPitcher(d,G));
+  else{var U_=gdOurs(G);if(U_&&G.ulu)o.push(gdOurBat(d,G,U_));o.push(gdPitcher(d,G));}
   return o.join("");}
 
 
@@ -1841,7 +1880,7 @@ function tlRate(U){var L=line((LG().bat||[])[0])||{avg:.29,obp:.39,slg:.42,k:.18
   U.players.forEach(function(p,i){var c=grdGet(p.n);seen[mxNorm(p.n)]=1;if((p.s&&p.s[0][0]>=10)||(c&&(c.hit||c.eye||c.pow||c.run)))one(c&&c.pos&&!p.fp?{n:p.n,b:p.b,t:p.t,pos:p.pos,yr:p.yr,s:p.s,fp:tlFp(c.pos)}:p,i,c);});
   var k=0;Object.keys(GRD.players).forEach(function(key){var c=GRD.players[key];if(seen[key]||!c.add)return;k++;one({n:c.n,b:c.b||"",pos:c.pos||"",yr:"New",fp:tlFp(c.pos),added:1},-k,c);});
   out.sort(function(a,b){return b.z.ovr-a.z.ovr;});return out;}
-function tlPosTxt(p){if(!p.fp)return esc(p.pos||"");return Object.keys(p.fp).sort(function(a,b){return p.fp[b][1]-p.fp[a][1];}).map(function(k){return k+" "+p.fp[k][1];}).join(", ");}
+function tlPosTxt(p){if(!p.fp)return esc(p.pos||"");return Object.keys(p.fp).sort(function(a,b){return p.fp[b][1]-p.fp[a][1];}).map(function(k){return k+" ("+p.fp[k][1]+")";}).join(", ");}
 var GRD_WORD={1:"well below",2:"below",3:"average",4:"above",5:"well above"};
 var GRD_RUB={hit:{5:"Squares up everything and almost never strikes out. One of the best bats in the conference.",4:"Consistent hard contact and tough to strike out. A bat you build around.",3:"A solid college hitter. Handles average pitching, can be beaten by good stuff.",2:"Too many swings and misses or too much weak contact. Has holes pitchers find.",1:"Overmatched by college pitching right now."},
   eye:{5:"Owns the strike zone. Walks about as often as he strikes out and never gives away an at-bat.",4:"Takes his walks, rarely chases, works deep counts.",3:"Average eye. Takes the walk when it is given to him.",2:"Chases out of the zone and seldom walks.",1:"Swings at everything. Pitchers do not have to throw him a strike."},
@@ -1898,6 +1937,121 @@ function vDepth(d){var f=usGet(),o=[usPicker()],t=f?teamFolder(f):null;
     +"Without a coach grade the stats grade results at the plate from play-by-play only and do not see bat speed, exit velocity, arm or glove.</div></div>");
   o.push(grdEditor(U));
   return o.join("");}
+var CFPOS=["C","1B","2B","3B","SS","LF","CF","RF"],CFNAME={C:"Catcher","1B":"First base","2B":"Second base","3B":"Third base",SS:"Shortstop",LF:"Left field",CF:"Center field",RF:"Right field"},CF_FAIL={},CFMAN={C:"catcher","1B":"first baseman","2B":"second baseman","3B":"third baseman",SS:"shortstop",LF:"left fielder",CF:"center fielder",RF:"right fielder"};
+function cfTeams(){var me=teamFolder(S.team),c=String((me||{}).c||"").toUpperCase();return IDX.teams.filter(function(t){return String(t.c||"").toUpperCase()===c&&t.s[S.season];});}
+function cfNeedsLoad(){return cfTeams().some(function(t){var k=t.f+"_"+S.season;return !CACHE[k]&&!CF_FAIL[k];});}
+function cfLoad(){var T=cfTeams(),todo=T.filter(function(t){var k=t.f+"_"+S.season;return !CACHE[k]&&!CF_FAIL[k];}),n=T.length-todo.length;
+  function step(){if(S.tab!=="conf")return;if(!todo.length){render();return;}var t=todo.shift(),k=t.f+"_"+S.season;
+    $("view").innerHTML=subNav()+'<div class="empty">Loading the conference: '+(++n)+" of "+T.length+" teams…</div>";
+    loadTeam(t.f,S.season,function(x){if(!x)CF_FAIL[k]=1;step();});}
+  renderTabs();step();}
+function cfShare(p){var tot=0,o={};if(!p.fp)return o;Object.keys(p.fp).forEach(function(k){tot+=p.fp[k][1];});Object.keys(p.fp).forEach(function(k){o[k]=p.fp[k][1]/tot;});return o;}
+function cfData(){var out={teams:[],nofp:[],fail:[]};cfTeams().forEach(function(t){var d=CACHE[t.f+"_"+S.season];if(!d){out.fail.push(t.n);return;}
+    if(!d.players.some(function(p){return p.fp;})){out.nofp.push(t.n);return;}
+    var pos={},who={};CFPOS.forEach(function(k){pos[k]=[0,0,0,0,0,0,0,0,0,0,0];who[k]=[];});
+    d.players.forEach(function(p,i){if(!p.fp||!p.s||!p.s[0][0])return;var sh=cfShare(p);Object.keys(sh).forEach(function(k){if(!pos[k])return;for(var j=0;j<11;j++)pos[k][j]+=p.s[0][j]*sh[k];who[k].push({p:p,i:i,g:p.fp[k][1],gs:p.fp[k][0],sh:sh[k]});});});
+    CFPOS.forEach(function(k){who[k].sort(function(a,b){return b.g-a.g;});});
+    out.teams.push({t:t,d:d,pos:pos,who:who});});return out;}
+function cfRank(C,pos){var a=C.teams.map(function(x){var l=line(x.pos[pos]);return{x:x,l:l,ops:l&&l.pa>=20?opsOf(l):null};}).filter(function(r){return r.ops!=null;});a.sort(function(p,q){return q.ops-p.ops;});return a;}
+function vConf(d){var C=cfData(),me=teamFolder(S.team),conf=String((me||{}).c||"").toUpperCase(),us=usGet(),o=[];
+  if(!C.teams.length)return '<div class="empty"><h2>No position data for '+esc(conf)+" in "+S.season+"</h2><p>Rebuild the scouting data, then publish.</p></div>";
+  if(CFPOS.indexOf(S.cpos)<0)S.cpos="C";
+  var tiles=CFPOS.map(function(k){var R=cfRank(C,k),ix=-1;R.forEach(function(r,n){if(r.x.t.f===S.team)ix=n;});var avg=R.length?R.reduce(function(s,r){return s+r.ops;},0)/R.length:null,r=ix>=0?R[ix]:null;
+    var cls=r?(ix<Math.ceil(R.length/3)?" hi":ix>=R.length-Math.ceil(R.length/3)?" lo":""):"";
+    return '<button class="cfp'+cls+(k===S.cpos?" sel":"")+'" data-cp="'+k+'" aria-pressed="'+(k===S.cpos)+'"><b>'+k+'</b><span class="v">'+(r?f3(r.ops)+" OPS":"–")+"</span><span>"+(r?ord(ix+1)+" of "+R.length:"no data")+"</span><span>"+(avg!=null?"conf avg "+f3(avg):"")+"</span></button>";}).join("");
+  o.push('<div class="card"><h3>'+esc(d.name)+" by position against the "+esc(conf)+'</h3><div class="note" style="margin-bottom:8px">OPS the team gets from each position and where that ranks in the conference. Green is the top third, red the bottom third. Pick a position for the detail.</div><div class="cfpos">'+tiles+"</div></div>");
+  var k=S.cpos,R=cfRank(C,k),pool=[0,0,0,0,0,0,0,0,0,0,0];C.teams.forEach(function(x){for(var j=0;j<11;j++)pool[j]+=x.pos[k][j];});
+  var AV=line(pool),avOps=AV?opsOf(AV):null;
+  function idx(l){return AV&&AV.obp&&AV.slg?Math.round(100*(l.obp/AV.obp+l.slg/AV.slg-1)):null;}
+  function vs(l){if(avOps==null)return "<td>–</td><td>–</td>";var df=opsOf(l)-avOps,ix=idx(l);return '<td style="font-weight:700;color:'+(df>=.03?"var(--acc)":df<=-.03?"var(--bad)":"inherit")+'">'+(df>-.0005?"+":"–")+f3(Math.abs(df))+"</td><td>"+ix+"</td>";}
+  function avRow(first,cols){return AV?'<tr class="cav"><td></td><td class="l" colspan="'+cols+'">'+first+"</td><td>"+f3(AV.avg)+"</td><td>"+f3(AV.obp)+"</td><td>"+f3(AV.slg)+"</td><td><b>"+f3(avOps)+"</b></td><td>–</td><td>100</td><td>–</td><td>"+pc0(AV.k)+"</td><td>"+pc0(AV.bb)+"</td>":"";}
+  o.push('<div class="card"><h3>'+CFNAME[k]+": every "+esc(conf)+' team</h3><div style="overflow:auto"><table class="mx"><tr><th></th><th class="l">Team</th><th class="l">Who plays there (games)</th><th>PA</th><th>AVG</th><th>OBP</th><th>SLG</th><th>OPS</th><th>vs avg</th><th>Index</th><th>HR</th><th>K%</th><th>BB%</th></tr>'
+    +R.map(function(r,n){var l=r.l,x=r.x,av=(avOps!=null&&r.ops<avOps&&(n===0||R[n-1].ops>=avOps))?avRow(esc(conf)+" average at "+k,3)+"</tr>":"";return av+'<tr class="'+(x.t.f===S.team?"me":x.t.f===us?"us":"")+'"><td>'+(n+1)+'</td><td class="l">'+esc(x.t.n)+'</td><td class="l note" style="white-space:normal">'+x.who[k].slice(0,3).map(function(w){return esc(w.p.n)+" ("+w.g+")";}).join(", ")+"</td><td>"+Math.round(l.pa)+"</td><td>"+f3(l.avg)+"</td><td>"+f3(l.obp)+"</td><td>"+f3(l.slg)+"</td><td><b>"+f3(r.ops)+"</b></td>"+vs(l)+"<td>"+Math.round(l.hr)+"</td><td>"+pc0(l.k)+"</td><td>"+pc0(l.bb)+"</td></tr>";}).join("")+"</table></div></div>");
+  var min=S.cfAll?1:40,P=[];C.teams.forEach(function(x){x.who[k].forEach(function(w){var sh=cfShare(w.p),prim=Object.keys(sh).sort(function(a,b){return sh[b]-sh[a];})[0],l=line(w.p.s[0]);
+      if((prim===k||w.g>=10)&&l&&l.pa>=min)P.push({w:w,x:x,l:l,ops:opsOf(l),prim:prim===k,rn:((x.d.run||{}).runners||{})[w.i]});});});
+  P.sort(function(a,b){return b.ops-a.ops;});
+  var mineP=P.filter(function(r){return r.x.t.f===S.team;}),stack=mineP.length&&avOps!=null?'<ul class="bl" style="margin:0 0 10px">'+mineP.map(function(r){var df=r.ops-avOps,rk=P.indexOf(r)+1;
+      return "<li><b>"+esc(r.w.p.n)+"</b> has a "+f3(r.ops)+" OPS, "+(Math.abs(df)<.015?"right at":f3(Math.abs(df))+(df>0?" above":" below"))+" the average "+esc(conf)+" "+CFMAN[k]+" ("+f3(avOps)+"). He ranks "+ord(rk)+" of "+P.length+" and his index is "+idx(r.l)+" (100 is average).</li>";}).join("")+"</ul>":"";
+  o.push('<div class="card"><h3>'+CFNAME[k]+": every "+esc(conf)+' player</h3>'+stack+'<div class="note np" style="margin-bottom:8px">'+(S.cfAll?"Showing everyone who has played there. ":"Players with 40 or more plate appearances. ")+'<a href="#" id="cfAll">'+(S.cfAll?"Show regulars only":"Show everyone")+'</a></div><div style="overflow:auto"><table class="mx"><tr><th></th><th class="l">Player</th><th class="l">Team</th><th>Yr</th><th>B</th><th>G at '+k+"</th><th>PA</th><th>AVG</th><th>OBP</th><th>SLG</th><th>OPS</th><th>vs avg</th><th>Index</th><th>HR</th><th>K%</th><th>BB%</th><th>SB</th></tr>"
+    +(P.length?P.map(function(r,n){var l=r.l,p=r.w.p,mine=r.x.t.f===S.team,av=(avOps!=null&&r.ops<avOps&&(n===0||P[n-1].ops>=avOps))?avRow("Average "+esc(conf)+" "+CFMAN[k],6)+"<td>–</td></tr>":"";return av+'<tr class="'+(mine?"me":r.x.t.f===us?"us":"")+'"><td>'+(n+1)+'</td><td class="l">'+(mine?nm(p,r.w.i):esc(p.n))+(r.prim?"":' <span class="note">(also plays elsewhere)</span>')+'</td><td class="l">'+esc(r.x.t.n)+"</td><td>"+esc(p.yr||"–")+"</td><td>"+(p.b||"–")+"</td><td>"+r.w.g+"</td><td>"+l.pa+"</td><td>"+f3(l.avg)+"</td><td>"+f3(l.obp)+"</td><td>"+f3(l.slg)+"</td><td><b>"+f3(r.ops)+"</b></td>"+vs(l)+"<td>"+l.hr+"</td><td>"+pc0(l.k)+"</td><td>"+pc0(l.bb)+"</td><td>"+(r.rn&&r.rn[1]?r.rn[2]+"/"+r.rn[1]:"–")+"</td></tr>";}).join(""):'<tr><td class="l" colspan="17">No one qualifies.</td></tr>')
+    +'</table></div><div class="note" style="margin-top:8px">A player is listed at a position when it is where he plays most, or when he has 10 or more games there. His numbers are his whole season at the plate. The conference average is the production of every team at that position added together. "vs avg" is his OPS minus that average; the index puts on-base and slugging on one scale where 100 is the average player at that position, so 120 is 20% better. For the team table, a player who splits time has his season divided between his positions by games played at each, so a team\'s line at a position is close but not exact. Designated hitters are not included.'
+    +(C.nofp.length?" No position data yet for: "+C.nofp.map(esc).join(", ")+".":"")+(C.fail.length?" Could not load: "+C.fail.map(esc).join(", ")+".":"")+"</div></div>");
+  return o.join("");}
+function cfBind(){var v=$("view");[].forEach.call(v.querySelectorAll("button[data-cp]"),function(b){b.onclick=function(){S.cpos=b.getAttribute("data-cp");render();};});
+  var a=$("cfAll");if(a)a.onclick=function(e){e.preventDefault();S.cfAll=!S.cfAll;render();};}
+function huData(d){var rows=[],G=d.games.length,off={};((d.bench||{}).ev||[]).forEach(function(e){if(e[5]>=0)off[e[0]+"_"+e[5]]=e;});
+  d.players.forEach(function(p,i){if(!p.gl||!p.gl.length)return;var cells=[],gs=0,ab=0,h=0,ph=0,pr=0,df=0,out=0,pos={};
+    p.gl.forEach(function(r){cells[r[0]]=r;gs+=r[2];ab+=r[4];h+=r[5];if(!r[2]){if(r[6]==="ph")ph++;else if(r[6]==="pr")pr++;else df++;}
+      if(off[r[0]+"_"+i])out++;var k=r[1].split("/").filter(function(c){return c!=="PH"&&c!=="PR";})[0]||r[1];if(r[2])pos[k]=(pos[k]||0)+1;});
+    rows.push({p:p,i:i,cells:cells,g:p.gl.length,gs:gs,ab:ab,h:h,ph:ph,pr:pr,df:df,out:out,pos:pos});});
+  rows.sort(function(a,b){return b.gs-a.gs||b.g-a.g;});return{rows:rows,G:G,off:off};}
+function huTitle(d,x,r,off){var g=d.games[r[0]],t=g[0].slice(5)+(g[2]?" vs ":" at ")+g[1]+": ",who=function(j){return j>=0&&d.players[j]?d.players[j].n:"a teammate";};
+  if(r[2])t+="started at "+r[1].replace(/\//g,", then ");
+  else t+=(r[6]==="ph"?"pinch hit for ":r[6]==="pr"?"pinch ran for ":"came in on defense for ")+who(r[8])+(r[7]?" in the "+ord(r[7]):"")+(r[1].replace(/^(PH|PR)\/?/,"")?" and played "+r[1].replace(/^(PH|PR)\/?/,"").replace(/\//g,", then "):"");
+  t+=" · "+(r[4]?r[5]+" for "+r[4]:"no at-bats")+(r[3]>r[4]?" ("+r[3]+" plate appearances)":"");
+  if(off)t+=" · taken out in the "+ord(off[1])+" for "+who(off[4]);return t;}
+function huGrid(d,H,from){var gs=[],i;for(i=from;i<H.G;i++)gs.push(i);
+  var h='<table class="ug"><tr><th class="un">Player</th>'+gs.map(function(i){var g=d.games[i];
+    return '<th class="ugh '+(g[3]>g[4]?"gw":g[3]<g[4]?"gl":"")+'" style="width:31px;min-width:31px" title="'+esc(g[0]+(g[2]?" vs ":" @ ")+g[1]+" · "+g[3]+"-"+g[4])+'">'+esc(g[0].slice(5).replace(/^0/,"").replace("-","/").replace("/0","/"))+"<i>"+esc(oppCode(g[1]))+"</i><b>"+(g[3]>g[4]?"W":g[3]<g[4]?"L":"T")+"</b></th>";}).join("")+"</tr>";
+  var shown=H.rows.filter(function(x){return gs.some(function(i){return x.cells[i];});});
+  shown.forEach(function(x,k){var nx=shown[k+1];
+    h+='<tr'+(k===8&&nx?' class="usep"':"")+'><td class="un">'+nm(x.p,x.i)+(x.p.b?' <span class="note">'+x.p.b+"</span>":"")+"</td>"+gs.map(function(i){var r=x.cells[i];if(!r)return '<td class="hc"></td>';
+      var o=H.off[i+"_"+x.i],code=r[1].split("/")[0],c=r[2]?(code==="DH"?"dh":"st"):r[6]==="ph"?"ph":r[6]==="pr"?"pr":"df";
+      return '<td class="hc '+c+(o?" off":"")+'" title="'+esc(huTitle(d,x,r,o))+'">'+code+"<i>"+(r[4]||(r[3]?"0":"–"))+"</i></td>";}).join("")+"</tr>";});
+  return h+"</table>";}
+function huPairs(d){var m={};((d.bench||{}).ev||[]).forEach(function(e){if(e[5]<0)return;var k=e[4]+"_"+e[5]+"_"+e[3],r=m[k]||(m[k]={i:e[4],o:e[5],how:e[3],n:0,inn:[],last:0});r.n++;r.inn.push(e[1]);r.last=Math.max(r.last,e[0]);});
+  return Object.keys(m).map(function(k){return m[k];}).sort(function(a,b){return b.n-a.n||b.last-a.last;});}
+function huRole(x,G){var r=x.gs/Math.max(G,1);if(r>=.8)return "Everyday";if(r>=.5)return "Regular";if(r>=.25)return "Part-time starter";
+  var m=Math.max(x.ph,x.pr,x.df);if(m>=2&&m>=x.gs)return x.ph===m?"Bench bat":x.pr===m?"Pinch runner":"Defensive replacement";return x.gs?"Spot starter":"Seldom used";}
+function huPrim(rs){var c={},b=null;rs.forEach(function(r){if(!r[2])return;var k=r[1].split("/")[0];c[k]=(c[k]||0)+1;});Object.keys(c).forEach(function(k){if(!b||c[k]>c[b])b=k;});return{pos:b,n:b?c[b]:0,txt:Object.keys(c).sort(function(a,z){return c[z]-c[a];}).map(function(k){return k+" ("+c[k]+")";}).join(", ")};}
+function huRecent(d,H){var G=H.G,N=14,from=G-N;if(G<=N+3)return null;
+  var rows=H.rows.map(function(x){var late=x.p.gl.filter(function(r){return r[0]>=from;}),early=x.p.gl.filter(function(r){return r[0]<from;});
+    var r={x:x,g:late.length,gs:0,ab:0,eg:early.length,egs:0,eab:0,pl:huPrim(late),pe:huPrim(early)};late.forEach(function(q){r.gs+=q[2];r.ab+=q[4];});early.forEach(function(q){r.egs+=q[2];r.eab+=q[4];});
+    var was=r.egs/(G-N),now=r.gs/N;
+    r.chg=!r.g?(x.g>=5?"Not used":""):now>=.7&&was<.4?"Now starting":was>=.7&&now<=.35?"Lost his spot":now>=was*1.5&&r.gs>=5&&was<.6?"Playing more lately":was>=.3&&now<=was*.5?"Playing less lately":(r.pl.pos&&r.pe.pos&&r.pl.pos!==r.pe.pos&&r.pl.n>=4&&r.pe.n>=4)?"Moved to "+r.pl.pos:"";
+    return r;});
+  rows.sort(function(a,b){return b.gs-a.gs||b.ab-a.ab||b.x.gs-a.x.gs;});return{rows:rows,N:N,G:G};}
+function huChgCls(t){return /Now starting|more lately/.test(t)?"t":/Not used|Lost his spot|less lately/.test(t)?"w":"i";}
+function huRecentCard(d,H){var R=huRecent(d,H);if(!R)return "";var N=R.N,G=R.G;
+  var up=R.rows.filter(function(r){return /Now starting|more lately/.test(r.chg);}).map(function(r){return esc(r.x.p.n);}),dn=R.rows.filter(function(r){return /Not used|Lost his spot|less lately/.test(r.chg)&&r.x.gs>=5;}).map(function(r){return esc(r.x.p.n);}),mv=R.rows.filter(function(r){return /^Moved/.test(r.chg);}).map(function(r){return esc(r.x.p.n)+" ("+r.pe.pos+" to "+r.pl.pos+")";});
+  var hd=[up.length?"Playing more lately: "+up.slice(0,4).join(", ")+".":"",dn.length?"Playing less: "+dn.slice(0,4).join(", ")+".":"",mv.length?"Changed position: "+mv.slice(0,3).join(", ")+".":""].filter(Boolean).join(" ")||"The last "+N+" games look like the season: the same players are starting in the same places.";
+  return '<div class="card"><h3>The season against the last '+N+' games</h3><div class="ttr">'+hd+'</div><div style="overflow:auto"><table class="wr sv14"><tr><th class="l" rowspan="2">Player</th><th rowspan="2">B</th><th colspan="4" class="gh">First '+(G-N)+' games</th><th colspan="4" class="gh">Last '+N+' games</th><th class="l" rowspan="2">Change</th></tr>'
+    +'<tr><th>G</th><th>GS</th><th>AB</th><th class="l">Started at</th><th class="gl">G</th><th>GS</th><th>AB</th><th class="l">Started at</th></tr>'
+    +R.rows.map(function(r){var x=r.x;return '<tr><td class="l"><b>'+nm(x.p,x.i)+"</b></td><td>"+(x.p.b||"–")+"</td><td>"+(r.eg||"–")+"</td><td>"+(r.eg?r.egs:"–")+"</td><td>"+(r.eg?r.eab:"–")+'</td><td class="l">'+(r.pe.txt||"–")+'</td><td class="gl">'+(r.g||"–")+"</td><td>"+(r.g?"<b>"+r.gs+"</b>":"–")+"</td><td>"+(r.g?r.ab:"–")+'</td><td class="l">'+(r.pl.txt||"–")+'</td><td class="l">'+(r.chg?'<span class="k-'+huChgCls(r.chg)+'"><span class="ktag" style="margin:0">'+r.chg+"</span></span>":"")+"</td></tr>";}).join("")
+    +'</table></div><div class="note" style="margin-top:8px">Sorted by starts in the last '+N+' games. <b>Now starting</b> = started 70% or more of the last '+N+' after starting fewer than 40% before. <b>Lost his spot</b> is the reverse. <b>Playing more / less lately</b> = his rate of starts rose by half or fell by half. <b>Moved</b> = his usual starting position changed.</div></div>';}
+function huInsights(d,H){var a=[],G=H.G,ev=H.rows.filter(function(x){return x.gs/G>=.8;}),nm2=function(x){return "<b>"+esc(x.p.n)+"</b>";};
+  if(ev.length>=7)a.push({t:"<b>Set lineup.</b> "+ev.length+" players have started at least 80% of the games: "+ev.map(function(x){return esc(x.p.n);}).join(", ")+"."});
+  else a.push({t:"<b>They move the lineup around.</b> Only "+ev.length+" player"+(ev.length===1?" has":"s have")+" started 80% or more of the games"+(ev.length?": "+ev.map(function(x){return esc(x.p.n);}).join(", "):"")+"."});
+  function at(pos){return H.rows.map(function(x){return{x:x,n:x.pos[pos]||0};}).filter(function(r){return r.n>0;}).sort(function(p,q){return q.n-p.n;});}
+  var c=at("C");if(c.length>=2&&c[1].n>=G*.2)a.push({t:"<b>Two catchers.</b> "+c.slice(0,3).map(function(r){return esc(r.x.p.n)+" "+r.n+" starts";}).join(", ")+"."});
+  else if(c.length)a.push({t:"<b>One catcher.</b> "+esc(c[0].x.p.n)+" has caught "+c[0].n+" of "+G+" starts."});
+  var dh=at("DH");if(dh.length){if(dh[0].n>=G*.5)a.push({t:"<b>The DH is "+esc(dh[0].x.p.n)+"</b> ("+dh[0].n+" of "+G+" games)."});else a.push({t:"<b>The DH spot rotates.</b> "+dh.slice(0,4).map(function(r){return esc(r.x.p.n)+" "+r.n;}).join(", ")+"."});}
+  var P=huPairs(d),W={ph:"pinch hits for",pr:"pinch runs for",d:"comes in on defense for"};
+  ["d","pr","ph"].forEach(function(h){var p=P.filter(function(r){return r.how===h&&r.n>=3;})[0];if(!p)return;var s2=p.inn.slice().sort(function(x,y){return x-y;}),md=s2[Math.floor(s2.length/2)];
+    a.push({t:"<b>"+(h==="d"?"Late defense":h==="pr"?"Pinch runner":"Pinch hitter")+".</b> "+esc(d.players[p.i].n)+" "+W[h]+" "+esc(d.players[p.o].n)+": "+p.n+" times, usually in the "+ord(md)+".",cls:h==="d"?"":"t"});});
+  var R=huRecent(d,H);if(R){R.rows.forEach(function(r){if(r.chg==="Now starting")a.push({t:nm2(r.x)+" is now starting: "+r.gs+" of the last "+R.N+" after "+r.egs+" of the first "+(G-R.N)+".",cls:"t"});
+      else if(r.chg==="Lost his spot")a.push({t:nm2(r.x)+" has lost his spot: "+r.gs+" starts in the last "+R.N+" after "+r.egs+" in the first "+(G-R.N)+".",cls:"w"});});}
+  var off=H.rows.filter(function(x){return x.out>=Math.max(5,x.gs*.4);}).sort(function(p,q){return q.out-p.out;})[0];
+  if(off)a.push({t:nm2(off)+" starts but often does not finish: taken out in "+off.out+" of "+off.gs+" starts."});
+  return a;}
+function vHuse(d){var H=huData(d),o=[];
+  if(!H.rows.length)return '<div class="card"><h3>Who plays when</h3><div class="note">No game-by-game lineup data for this team yet. Rebuild the scouting data, then publish.</div></div>';
+  o.push('<div class="card"><h3>How they use the lineup</h3>'+insList(huInsights(d,H))+"</div>");
+  o.push(huRecentCard(d,H));
+  var n=S.huAll?H.G:Math.min(H.G,20),from=H.G-n;
+  o.push('<div class="card"><h3>'+(from?"Last "+n+" games":"The season, game by game")+': who played where</h3><div class="note np" style="margin-bottom:8px">Each box is one game: the position on top, at-bats underneath. Hover or tap a box for the detail. '+(H.G>20?'<a href="#" id="huAll">'+(S.huAll?"Show the last 20 games":"Show all "+H.G+" games")+"</a>":"")+'</div><div style="overflow:auto">'+huGrid(d,H,from)+"</div>"
+    +'<div class="hkey"><span><b style="background:var(--navy)"></b>Started in the field</span><span><b style="background:#5d6b78"></b>Started at DH</span><span><b style="background:#f3c98b"></b>Pinch hitter</span><span><b style="background:#bfe3dd"></b>Pinch runner</span><span><b style="background:#e3e8ec"></b>Defensive replacement</span><span><b style="background:#fff;box-shadow:inset 0 -4px 0 var(--bad);border:1px solid var(--line)"></b>Taken out during the game</span></div></div>');
+  o.push('<div class="card"><h3>Roles and playing time</h3><div style="overflow:auto"><table class="mx"><tr><th class="l">Player</th><th>B</th><th class="l">Role</th><th>Games</th><th>Starts</th><th class="l">Started at</th><th>AB</th><th>AB / game</th><th>AVG</th><th>Pinch hit</th><th>Pinch ran</th><th>On defense</th><th>Taken out</th></tr>'
+    +H.rows.map(function(x){var ps=Object.keys(x.pos).sort(function(a,b){return x.pos[b]-x.pos[a];}).map(function(k){return k+" ("+x.pos[k]+")";}).join(", ");
+      return '<tr><td class="l">'+nm(x.p,x.i)+"</td><td>"+(x.p.b||"–")+'</td><td class="l">'+huRole(x,H.G)+"</td><td>"+x.g+"</td><td><b>"+x.gs+'</b></td><td class="l">'+(ps||"–")+"</td><td>"+x.ab+"</td><td>"+(x.ab/x.g).toFixed(1)+"</td><td>"+(x.ab?f3(x.h/x.ab):"–")+"</td><td>"+(x.ph||"–")+"</td><td>"+(x.pr||"–")+"</td><td>"+(x.df||"–")+"</td><td>"+(x.out||"–")+"</td></tr>";}).join("")+"</table></div></div>");
+  var P=huPairs(d),W={ph:"Pinch hits for",pr:"Pinch runs for",d:"Replaces on defense"};
+  o.push('<div class="card"><h3>Substitutions: who comes in for whom</h3>'+(P.length?'<div style="overflow:auto"><table class="mx"><tr><th class="l">Comes in</th><th class="l">How</th><th class="l">For</th><th>Times</th><th>Usual inning</th><th class="l">Last time</th></tr>'
+    +P.slice(0,S.huPairs?P.length:15).map(function(r){var a=r.inn.slice().sort(function(x,y){return x-y;}),md=a[Math.floor(a.length/2)],g=d.games[r.last];
+      return '<tr><td class="l">'+nm(d.players[r.i],r.i)+'</td><td class="l">'+W[r.how]+'</td><td class="l">'+nm(d.players[r.o],r.o)+"</td><td><b>"+r.n+"</b></td><td>"+ord(md)+'</td><td class="l note" style="white-space:nowrap">'+g[0].slice(5)+(g[2]?" vs ":" at ")+esc(g[1])+"</td></tr>";}).join("")+"</table></div>"
+    +(P.length>15&&!S.huPairs?'<div class="note np" style="margin-top:8px"><a href="#" id="huPairs">Show all '+P.length+"</a></div>":""):'<div class="note">No substitutions were recorded in the play-by-play.</div>')
+    +'<div class="note" style="margin-top:8px">Substitutions come from the play-by-play lines such as "pinch hit for" and "to rf for". A change the scorer did not write down shows as a player appearing in the field without a start. Pitching changes are on the Pitchers tab. Roles: Everyday = started 80% or more of the games, Regular = half or more, Part-time starter = a quarter or more; below that a player is named for what he mostly does off the bench.</div></div>');
+  return o.join("");}
+function huBind(){var a=$("huAll"),b=$("huPairs");if(a)a.onclick=function(e){e.preventDefault();S.huAll=!S.huAll;render();};if(b)b.onclick=function(e){e.preventDefault();S.huPairs=true;render();};}
 function vMatch(d){var f=usGet(),o=[usPicker()],t=f?teamFolder(f):null;
   if(!t){o.push('<div class="empty"><h2>'+(ACCT.on&&!ACCT.admin?"No team on this account":"Set our team")+"</h2><p>"+(ACCT.on&&!ACCT.admin?"Once a team is tied to your sign-in, this page shows how we match up with ":"Type your school above. This page then shows how we match up with ")+esc(d.name)+".</p></div>");return o.join("");}
   if(f===d.folder){o.push('<div class="empty"><h2>This is our team</h2><p>Open an opponent to see the matchup.</p></div>');return o.join("");}
